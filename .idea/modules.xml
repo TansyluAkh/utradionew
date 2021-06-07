@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/ai_radio.iml" filepath="$PROJECT_DIR$/ai_radio.iml" />
-      <module fileurl="file://$PROJECT_DIR$/android/ai_radio_android.iml" filepath="$PROJECT_DIR$/android/ai_radio_android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/AI-Radio.iml" filepath="$PROJECT_DIR$/.idea/AI-Radio.iml" />
     </modules>
   </component>
 </project>

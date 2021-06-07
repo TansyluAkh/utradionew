@@ -18,15 +18,7 @@ class _HomePageState extends State<HomePage> {
   Color _selectedColor;
   bool _isPlaying = false;
   final sugg = [
-    "Play",
-    "Stop",
-    "Play rock music",
-    "Play 107 FM",
-    "Play next",
-    "Play 104 FM",
-    "Pause",
-    "Play previous",
-    "Play pop music"
+    "UrbanTatar"
   ];
 
   final AudioPlayer _audioPlayer = AudioPlayer();
