@@ -67,17 +67,16 @@ class _HomePageState extends State<HomePage> {
             child: radios != null
             ? [
             100.heightBox,
-            "All Channels".text.xl.white.semiBold.make().px16(),
+            "Өстәмәләр".text.xl.white.semiBold.make().px16(),
             20.heightBox,
             ListView(
               padding: Vx.m0,
               shrinkWrap: true,
-              children:[ListTile(title: Text('Безнен турында'),
+              children:[ListTile(title: Text('Баш бит'),
                 leading: Icon(IconData(57521, fontFamily: 'MaterialIcons')), onTap: () {Navigator.of(context).push(MaterialPageRoute(builder: (context) => NewScreen()));}),
-                ListTile(title: Text('Безнен турында'), leading: Icon(IconData(57521, fontFamily: 'MaterialIcons'))),
-                ListTile(title: Text('Безнен турында'), leading: Icon(IconData(57521, fontFamily: 'MaterialIcons'))),
-                ListTile(title: Text('Безнен турында'), leading: Icon(IconData(57521, fontFamily: 'MaterialIcons'))),
-                ListTile(title: Text('Безнен турында'), leading: Icon(IconData(57521, fontFamily: 'MaterialIcons')))]
+                ListTile(title: Text('Безнең турында'), leading: Icon(IconData(57521, fontFamily: 'MaterialIcons'))),
+                ListTile(title: Text('Элемтә'), leading: Icon(IconData(57521, fontFamily: 'MaterialIcons'))),
+                ListTile(title: Text('Уртаклашырга'), leading: Icon(IconData(57521, fontFamily: 'MaterialIcons')))]
             ).expand()
             ].vStack(crossAlignment: CrossAxisAlignment.start)
               : const Offstage(),
@@ -100,7 +99,7 @@ class _HomePageState extends State<HomePage> {
               .make(),
           [
             AppBar(
-              title: "UT Radio".text.xl4.bold.white.make().shimmer(
+              title: "UT radio".text.xl4.bold.white.make().shimmer(
                   primaryColor: Vx.purple300, secondaryColor: Colors.white),
               backgroundColor: Colors.transparent,
               elevation: 0.0,
@@ -133,7 +132,7 @@ class _HomePageState extends State<HomePage> {
                                 rad.category.text.uppercase.white.make().px16(),
                           )
                               .height(40)
-                              .black
+                              .transparent
                               .alignCenter
                               .withRounded(value: 10.0)
                               .make(),
@@ -187,7 +186,7 @@ class _HomePageState extends State<HomePage> {
             alignment: Alignment.bottomCenter,
             child: [
               if (_isPlaying)
-                "Уйный - ${metadata?[1]}"
+                "${metadata?[1]}"
                     .text
                     .white
                     .makeCentered(),
