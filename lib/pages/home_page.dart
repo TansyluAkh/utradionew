@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:url_launcher/url_launcher.dart';
+
 
 class HomePage extends StatefulWidget {
   @override
@@ -236,7 +236,7 @@ class NewScreen extends StatelessWidget {
           ].vStack(),
           RaisedButton(
             onPressed: () {
-              launch("https://mtechviral.com");
+              //
             },
             hoverColor: Vx.purple700,
             shape: Vx.roundedSm,
