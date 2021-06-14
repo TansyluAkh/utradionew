@@ -1,11 +1,11 @@
 import 'package:ai_radio/model/radio.dart';
 import 'package:ai_radio/utils/ai_util.dart';
-import 'package:alan_voice/alan_voice.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:radio_player/radio_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:velocity_x/velocity_x.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -13,104 +13,47 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<MyRadio> radios;
-  MyRadio _selectedRadio;
-  Color _selectedColor;
+  RadioPlayer _audioPlayer = RadioPlayer();
+  List<MyRadio> ?radios;
+  MyRadio ?_selectedRadio;
+  Color _selectedColor = Colors.white;
   bool _isPlaying = false;
-  final sugg = [
-    "UrbanTatar"
-  ];
-
-  final AudioPlayer _audioPlayer = AudioPlayer();
-
+  List<String>? metadata;
   @override
   void initState() {
     super.initState();
-    setupAlan();
     fetchRadios();
-
-    _audioPlayer.onPlayerStateChanged.listen((event) {
-      if (event == AudioPlayerState.PLAYING) {
-        _isPlaying = true;
-      } else {
-        _isPlaying = false;
-      }
-      setState(() {});
+    initRadioPlayer();
+  }
+  void initRadioPlayer() {
+    _audioPlayer.setMediaItem('vinyl', 'https://ilgamsharipov.radioca.st/stream');
+    _audioPlayer.stateStream.listen((value) {
+      setState(() {
+        _isPlaying = value;
+      });
     });
-  }
 
-  setupAlan() {
-    AlanVoice.addButton("956c3dc643fe29bc9526b23b4a68400d2e956eca572e1d8b807a3e2338fdd0dc/stage",
-        buttonAlign: AlanVoice.BUTTON_ALIGN_RIGHT);
-    AlanVoice.callbacks.add((command) => _handleCommand(command.data));
-  }
-
-  _handleCommand(Map<String, dynamic> response) {
-    switch (response["command"]) {
-      case "play":
-        _playMusic(_selectedRadio.url);
-        break;
-
-      case "play_channel":
-        final id = response["id"];
-        // _audioPlayer.pause();
-        MyRadio newRadio = radios.firstWhere((element) => element.id == id);
-        radios.remove(newRadio);
-        radios.insert(0, newRadio);
-        _playMusic(newRadio.url);
-        break;
-
-      case "stop":
-        _audioPlayer.stop();
-        break;
-      case "next":
-        final index = _selectedRadio.id;
-        MyRadio newRadio;
-        if (index + 1 > radios.length) {
-          newRadio = radios.firstWhere((element) => element.id == 1);
-          radios.remove(newRadio);
-          radios.insert(0, newRadio);
-        } else {
-          newRadio = radios.firstWhere((element) => element.id == index + 1);
-          radios.remove(newRadio);
-          radios.insert(0, newRadio);
-        }
-        _playMusic(newRadio.url);
-        break;
-
-      case "prev":
-        final index = _selectedRadio.id;
-        MyRadio newRadio;
-        if (index - 1 <= 0) {
-          newRadio = radios.firstWhere((element) => element.id == 1);
-          radios.remove(newRadio);
-          radios.insert(0, newRadio);
-        } else {
-          newRadio = radios.firstWhere((element) => element.id == index - 1);
-          radios.remove(newRadio);
-          radios.insert(0, newRadio);
-        }
-        _playMusic(newRadio.url);
-        break;
-      default:
-        print("Command was ${response["command"]}");
-        break;
-    }
+    _audioPlayer.metadataStream.listen((value) {
+      setState(() {
+        metadata = value;
+      });
+    });
   }
 
   fetchRadios() async {
     final radioJson = await rootBundle.loadString("assets/radio.json");
     radios = MyRadioList.fromJson(radioJson).radios;
-    _selectedRadio = radios[0];
-    _selectedColor = Color(int.tryParse(_selectedRadio.color));
+    _selectedRadio = radios![0];
+    _selectedColor = Color(int.tryParse(_selectedRadio!.color)!);
     print(radios);
     setState(() {});
   }
 
   _playMusic(String url) {
-    _audioPlayer.play(url);
-    _selectedRadio = radios.firstWhere((element) => element.url == url);
-    print(_selectedRadio.name);
+    _audioPlayer.setMediaItem('first', url);
+    _audioPlayer.play();
+    _selectedRadio = radios!.firstWhere((element) => element!.url == url);
+    print(_selectedRadio!.name);
     setState(() {});
   }
 
@@ -119,85 +62,65 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       drawer: Drawer(
         child: Container(
-          color: _selectedColor ?? AIColors.primaryColor2,
-          child: radios != null
-              ? [
-                  100.heightBox,
-                  "All Channels".text.xl.white.semiBold.make().px16(),
-                  20.heightBox,
-                  ListView(
-                    padding: Vx.m0,
-                    shrinkWrap: true,
-                    children: radios
-                        .map((e) => ListTile(
-                              leading: CircleAvatar(
-                                backgroundImage: NetworkImage(e.icon),
-                              ),
-                              title: "${e.name} FM".text.white.make(),
-                              subtitle: e.tagline.text.white.make(),
-                            ))
-                        .toList(),
-                  ).expand()
-                ].vStack(crossAlignment: CrossAxisAlignment.start)
+          color: _selectedColor,
+          // ignore: unnecessary_null_comparison
+            child: radios != null
+            ? [
+            100.heightBox,
+            "All Channels".text.xl.white.semiBold.make().px16(),
+            20.heightBox,
+            ListView(
+              padding: Vx.m0,
+              shrinkWrap: true,
+              children:[ListTile(title: Text('Безнен турында'),
+                leading: Icon(IconData(57521, fontFamily: 'MaterialIcons')), onTap: () {Navigator.of(context).push(MaterialPageRoute(builder: (context) => NewScreen()));}),
+                ListTile(title: Text('Безнен турында'), leading: Icon(IconData(57521, fontFamily: 'MaterialIcons'))),
+                ListTile(title: Text('Безнен турында'), leading: Icon(IconData(57521, fontFamily: 'MaterialIcons'))),
+                ListTile(title: Text('Безнен турында'), leading: Icon(IconData(57521, fontFamily: 'MaterialIcons'))),
+                ListTile(title: Text('Безнен турында'), leading: Icon(IconData(57521, fontFamily: 'MaterialIcons')))]
+            ).expand()
+            ].vStack(crossAlignment: CrossAxisAlignment.start)
               : const Offstage(),
         ),
       ),
       body: Stack(
         children: [
           VxAnimatedBox()
-              .size(context.screenWidth, context.screenHeight)
-              .withGradient(
-                LinearGradient(
-                  colors: [
-                    AIColors.primaryColor2,
-                    _selectedColor ?? AIColors.primaryColor1,
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              )
+              .size(context.screenWidth, context.screenHeight).withGradient(
+    LinearGradient(
+    colors: [
+    AIColors.primaryColor2,
+    _selectedColor,
+    ],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    ),
+    )
+        // .bgImage(DecorationImage(image: AssetImage('assets/bg.jpg')))
               .make(),
           [
             AppBar(
-              title: "AI Radio".text.xl4.bold.white.make().shimmer(
+              title: "UT Radio".text.xl4.bold.white.make().shimmer(
                   primaryColor: Vx.purple300, secondaryColor: Colors.white),
               backgroundColor: Colors.transparent,
               elevation: 0.0,
               centerTitle: true,
             ).h(100.0).p16(),
-            "Start with - Hey Alan 👇".text.italic.semiBold.white.make(),
-            10.heightBox,
-            VxSwiper.builder(
-              itemCount: sugg.length,
-              height: 50.0,
-              viewportFraction: 0.35,
-              autoPlay: true,
-              autoPlayAnimationDuration: 3.seconds,
-              autoPlayCurve: Curves.linear,
-              enableInfiniteScroll: true,
-              itemBuilder: (context, index) {
-                final s = sugg[index];
-                return Chip(
-                  label: s.text.make(),
-                  backgroundColor: Vx.randomColor,
-                );
-              },
-            )
           ].vStack(alignment: MainAxisAlignment.start),
           30.heightBox,
           radios != null
               ? VxSwiper.builder(
-                  itemCount: radios.length,
+                  itemCount: radios!.length,
                   aspectRatio: 1.0,
                   enlargeCenterPage: true,
                   onPageChanged: (index) {
-                    _selectedRadio = radios[index];
-                    final colorHex = radios[index].color;
-                    _selectedColor = Color(int.tryParse(colorHex));
+                    _selectedRadio = radios![index];
+                    final colorHex = radios![index].color;
+                    _selectedColor = Color(int.tryParse(colorHex)!);
                     setState(() {});
                   },
                   itemBuilder: (context, index) {
-                    final rad = radios[index];
+                    final rad = radios![index];
 
                     return VxBox(
                             child: ZStack(
@@ -225,18 +148,18 @@ class _HomePageState extends State<HomePage> {
                             ],
                             crossAlignment: CrossAxisAlignment.center,
                           ),
-                        ),
-                        Align(
-                            alignment: Alignment.center,
-                            child: [
-                              Icon(
-                                CupertinoIcons.play_circle,
-                                color: Colors.white,
-                              ),
-                              10.heightBox,
-                              "Double tap to play".text.gray300.make(),
-                            ].vStack())
-                      ],
+                        )],
+                      //   Align(
+                      //       alignment: Alignment.center,
+                      //       child: [
+                      //         Icon(
+                      //           CupertinoIcons.play_circle,
+                      //           color: Colors.white,
+                      //         ),
+                      //         10.heightBox,
+                      //         "Ике тапкыр бас".text.gray300.make(),
+                      //       ].vStack())
+                      // ],
                     ))
                         .clip(Clip.antiAlias)
                         .bgImage(
@@ -244,14 +167,14 @@ class _HomePageState extends State<HomePage> {
                               image: NetworkImage(rad.image),
                               fit: BoxFit.cover,
                               colorFilter: ColorFilter.mode(
-                                  Colors.black.withOpacity(0.3),
+                                  Colors.black.withOpacity(0),
                                   BlendMode.darken)),
                         )
                         .border(color: Colors.black, width: 5.0)
-                        .withRounded(value: 60.0)
+                        .withRounded(value: 25.0)
                         .make()
                         .onInkDoubleTap(() {
-                      _playMusic(rad.url);
+                      _playMusic(rad!.url);
                     }).p16();
                   },
                 ).centered()
@@ -264,7 +187,7 @@ class _HomePageState extends State<HomePage> {
             alignment: Alignment.bottomCenter,
             child: [
               if (_isPlaying)
-                "Playing Now - ${_selectedRadio.name} FM"
+                "Уйный - ${metadata?[1]}"
                     .text
                     .white
                     .makeCentered(),
@@ -276,9 +199,9 @@ class _HomePageState extends State<HomePage> {
                 size: 50.0,
               ).onInkTap(() {
                 if (_isPlaying) {
-                  _audioPlayer.stop();
+                  _audioPlayer.pause();
                 } else {
-                  _playMusic(_selectedRadio.url);
+                  _playMusic(_selectedRadio!.url!);
                 }
               })
             ].vStack(),
@@ -290,3 +213,42 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+class NewScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      child: VStack(
+        [[
+            " - Introduction".text.gray500.widest.sm.make(),
+            10.heightBox,
+            "@googledevexpert for Flutter, Firebase, Dart & Web.\nPublic Speaker, Blogger, Entrepreneur & YouTuber.\nFounder of MTechViral."
+                .text
+                .white
+                .xl3
+                .maxLines(5)
+                .make()
+                .w(context.isMobile
+                ? context.screenWidth
+                : context.percentWidth * 40),
+            20.heightBox,
+          ].vStack(),
+          RaisedButton(
+            onPressed: () {
+              launch("https://mtechviral.com");
+            },
+            hoverColor: Vx.purple700,
+            shape: Vx.roundedSm,
+            color: Colors.deepPurpleAccent,
+            textColor: Colors.black,
+            child: "Visit mtechviral.com".text.make(),
+          ).h(50)
+        ],
+        crossAlignment: CrossAxisAlignment.center,
+        alignment: MainAxisAlignment.center,
+      )
+    );
+  }
+}
+
