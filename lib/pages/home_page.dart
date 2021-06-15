@@ -82,27 +82,15 @@ class _HomePageState extends State<HomePage> {
               : const Offstage(),
         ),
       ),
-      body: SingleChildScrollView(scrollDirection: Axis.vertical,
+      body: SingleChildScrollView(scrollDirection: Axis.vertical, reverse: false,
       child:
       Column(
         children: [
-          VxAnimatedBox()
-              .size(context.screenWidth, context.screenHeight).withGradient(
-    LinearGradient(
-    colors: [
-    AIColors.primaryColor2,
-    _selectedColor,
-    ],
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    ),
-    )
-        // .bgImage(DecorationImage(image: AssetImage('assets/bg.jpg')))
-              .make(),
+
           [
             AppBar(
               title: "UT radio".text.xl4.bold.white.make().shimmer(
-                  primaryColor: Vx.purple300, secondaryColor: Colors.white),
+                  primaryColor: Vx.red500, secondaryColor: Colors.green),
               backgroundColor: Colors.transparent,
               elevation: 0.0,
               centerTitle: true,
@@ -131,7 +119,8 @@ class _HomePageState extends State<HomePage> {
                           right: 0.0,
                           child: VxBox(
                             child:
-                                rad.category.text.uppercase.white.make().px16(),
+                                rad.category.text.uppercase.white.make().shimmer(
+    primaryColor: Vx.red500, secondaryColor: Colors.green).px16(),
                           )
                               .height(40)
                               .transparent
@@ -157,11 +146,12 @@ class _HomePageState extends State<HomePage> {
                               image: NetworkImage(rad.image),
                               fit: BoxFit.cover,
                               colorFilter: ColorFilter.mode(
-                                  Colors.black.withOpacity(0),
-                                  BlendMode.darken)),
+    Colors.black.withOpacity(0),
+    BlendMode.darken)
+                              ),
                         )
-                        .border(color: Colors.black, width: 5.0)
-                        .withRounded(value: 25.0)
+                        .border(width: 5.0,)
+                        .withRounded(value: 60.0)
                         .make()
                         .onInkDoubleTap(() {
                       _playMusic(rad!.url);
@@ -178,16 +168,14 @@ class _HomePageState extends State<HomePage> {
             child: [
               if (_isPlaying)
                 "${metadata?[1]}"
-                    .text
-                    .white
-                    .makeCentered(),
+                    .text.green900.makeCentered(),
               Icon(
                 _isPlaying
                     ? CupertinoIcons.stop_circle
                     : CupertinoIcons.play_circle,
-                color: Colors.white,
                 size: 50.0,
-              ).onInkTap(() {
+              ).shimmer(
+    primaryColor: Vx.red500, secondaryColor: Colors.green).onInkTap(() {
                 if (_isPlaying) {
                   _audioPlayer.pause();
                 } else {
@@ -196,9 +184,55 @@ class _HomePageState extends State<HomePage> {
               })
             ].vStack(),
           ).pOnly(bottom: context.percentHeight * 12)
-        ],
+    //       ,VxAnimatedBox()
+    //           .size(context.screenWidth, context.screenHeight).withGradient(
+    // LinearGradient(
+    // colors: [
+    // AIColors.primaryColor2,
+    // _selectedColor,
+    // ],
+    // begin: Alignment.topLeft,
+    // end: Alignment.bottomRight,
+    // ),
+    // )
+    //     // .bgImage(DecorationImage(image: AssetImage('assets/bg.jpg')))
+    //           .make(),
+    ,Column(
+      children: <Widget>[
+      Text("Register",
+      style: TextStyle(
+      fontSize: 30.0,
+      fontWeight: FontWeight.bold),
       ),
-    ));
+    Text("Register",
+    style: TextStyle(
+    fontSize: 30.0,
+    fontWeight: FontWeight.bold),
+    ),
+    Text("Register",
+    style: TextStyle(
+    fontSize: 30.0,
+    fontWeight: FontWeight.bold),
+    ),
+    Text("Register",
+    style: TextStyle(
+    fontSize: 30.0,
+    fontWeight: FontWeight.bold),
+    ),
+    Text("Register",
+    style: TextStyle(
+    fontSize: 30.0,
+    fontWeight: FontWeight.bold),
+    ),
+    Text("Register",
+    style: TextStyle(
+    fontSize: 30.0,
+    fontWeight: FontWeight.bold),
+    ),
+
+      ],
+      ),
+    ])));
   }
 }
 
@@ -232,6 +266,7 @@ class NewScreen extends StatelessWidget {
             textColor: Colors.black,
             child: "Visit mtechviral.com".text.make(),
           ).h(50)
+
         ],
         crossAlignment: CrossAxisAlignment.center,
         alignment: MainAxisAlignment.center,
