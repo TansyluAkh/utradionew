@@ -82,7 +82,9 @@ class _HomePageState extends State<HomePage> {
               : const Offstage(),
         ),
       ),
-      body: Stack(
+      body: SingleChildScrollView(scrollDirection: Axis.vertical,
+      child:
+      Column(
         children: [
           VxAnimatedBox()
               .size(context.screenWidth, context.screenHeight).withGradient(
@@ -148,17 +150,6 @@ class _HomePageState extends State<HomePage> {
                             crossAlignment: CrossAxisAlignment.center,
                           ),
                         )],
-                      //   Align(
-                      //       alignment: Alignment.center,
-                      //       child: [
-                      //         Icon(
-                      //           CupertinoIcons.play_circle,
-                      //           color: Colors.white,
-                      //         ),
-                      //         10.heightBox,
-                      //         "Ике тапкыр бас".text.gray300.make(),
-                      //       ].vStack())
-                      // ],
                     ))
                         .clip(Clip.antiAlias)
                         .bgImage(
@@ -206,10 +197,8 @@ class _HomePageState extends State<HomePage> {
             ].vStack(),
           ).pOnly(bottom: context.percentHeight * 12)
         ],
-        fit: StackFit.expand,
-        clipBehavior: Clip.antiAlias,
       ),
-    );
+    ));
   }
 }
 
