@@ -25,10 +25,11 @@ dependencies:
     sdk: flutter
   audioplayers: ^0.18.3
   cupertino_icons: ^1.0.3
-  google_fonts: ^2.0.0
+  google_fonts:
   velocity_x: ^3.0.0
   radio_player: ^0.1.1
-
+  cloud_firestore: ^2.2.2
+  ez_flutter:
 dev_dependencies:
   flutter_test:
     sdk: flutter

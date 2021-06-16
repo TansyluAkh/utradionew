@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "827942650347",
+    "project_id": "urbantatar-radio",
+    "storage_bucket": "urbantatar-radio.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:827942650347:android:265ef775127f7b593c99ae",
+        "android_client_info": {
+          "package_name": "com.example.ai_radio"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "827942650347-dlv3qq77tlpep6rjb9gbskkkpl0t6fc6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzcmn_U2tOk5HOCY8luCp_UqYtJGKjR7E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "827942650347-dlv3qq77tlpep6rjb9gbskkkpl0t6fc6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
