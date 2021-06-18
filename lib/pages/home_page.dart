@@ -55,7 +55,8 @@ class _HomePageState extends State<HomePage> {
   _playMusic(String url) {
     _audioPlayer.setMediaItem('first', url);
     _audioPlayer.play();
-    _selectedRadio = radios!.firstWhere((element) => element!.url == url);
+    _selectedRadio = radios!.firstWhere((element) => element.url == url);
+    _selectedRadio = radios!.firstWhere((element) => element.url == url);
     print(_selectedRadio!.name);
     setState(() {});
   }
@@ -63,11 +64,11 @@ class _HomePageState extends State<HomePage> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   CollectionReference songs = FirebaseFirestore.instance.collection('songs');
 
-  Future<void> addUser() {
-    // Call the user's CollectionReference to add a new user
-    return songs.doc('utradio')
-        .update({
-          'second song': {'Artist': metadata}})
+  Future<void> addSong() async {
+    return songs.doc('0')
+        .update(<String, dynamic>{
+      'Likes': FieldValue.increment(1),
+    })
         .then((value) => print("Song info Added"))
         .catchError((error) => print("Failed to add song info: $error"));
   }
@@ -186,7 +187,7 @@ class _HomePageState extends State<HomePage> {
                             .withRounded(value: 60.0)
                             .make()
                             .onInkDoubleTap(() {
-                          _playMusic(rad!.url);
+                          _playMusic(rad.url);
                         }).p16();
                       },
                     ).centered()
@@ -199,8 +200,9 @@ class _HomePageState extends State<HomePage> {
                 alignment: Alignment.bottomCenter,
                 child: [
                   if (_isPlaying)
-                    "${metadata?[1]}".text.green900.makeCentered(),
-                  Icon(
+                    "${metadata?[0]} 0, ${metadata?[1]} 1, ${metadata?[2]} 2, ${metadata?[3]} 3,".text.green900.makeCentered(),
+    RaisedButton(onPressed: addSong).icon(const Icons.favorite).iconSize: 100, color: Colors.black, highlightColor: Colors.red,),
+    Icon(
                     _isPlaying
                         ? CupertinoIcons.stop_circle
                         : CupertinoIcons.play_circle,
@@ -212,31 +214,14 @@ class _HomePageState extends State<HomePage> {
                     if (_isPlaying) {
                       _audioPlayer.pause();
                     } else {
-                      _playMusic(_selectedRadio!.url!);
+                      _playMusic(_selectedRadio!.url);
                     }
                   })
                 ].vStack(),
               ).pOnly(bottom: context.percentHeight * 1)
-              //       ,VxAnimatedBox()
-              //           .size(context.screenWidth, context.screenHeight).withGradient(
-              // LinearGradient(
-              // colors: [
-              // AIColors.primaryColor2,
-              // _selectedColor,
-              // ],
-              // begin: Alignment.topLeft,
-              // end: Alignment.bottomRight,
-              // ),
-              // )
-              //     // .bgImage(DecorationImage(image: AssetImage('assets/bg.jpg')))
-              //           .make(),
               ,
               Column(
                 children: <Widget>[
-                  TextButton(
-                    onPressed: addUser,
-                    child: "${metadata?[0]} 0, ${metadata?[1]} 1, ${metadata?[2]} 2, ${metadata?[3]} 3,".text.green900.makeCentered()
-                  ),
                   Text(
                     "Register",
                     style:
