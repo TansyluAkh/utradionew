@@ -13,13 +13,16 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String _likedsong = 'start';
   RadioPlayer _audioPlayer = RadioPlayer();
   List<MyRadio>? radios;
   MyRadio? _selectedRadio;
   Color _selectedColor = Colors.white;
   bool _isPlaying = false;
   List<String>? metadata;
-
+  bool _ispressed = false;
+  String _info = '';
+  String _info1 = '';
   @override
   void initState() {
     super.initState();
@@ -28,8 +31,6 @@ class _HomePageState extends State<HomePage> {
   }
 
   void initRadioPlayer() {
-    _audioPlayer.setMediaItem(
-        'vinyl', 'https://ilgamsharipov.radioca.st/stream');
     _audioPlayer.stateStream.listen((value) {
       setState(() {
         _isPlaying = value;
@@ -39,6 +40,7 @@ class _HomePageState extends State<HomePage> {
     _audioPlayer.metadataStream.listen((value) {
       setState(() {
         metadata = value;
+        print(metadata);
       });
     });
   }
@@ -60,17 +62,31 @@ class _HomePageState extends State<HomePage> {
     print(_selectedRadio!.name);
     setState(() {});
   }
-
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   CollectionReference songs = FirebaseFirestore.instance.collection('songs');
+  Icon check(){
+    if (_likedsong != metadata?[2]){
+      return Icon(Icons.favorite_border_outlined);
+    }
+    else{
+      return Icon(Icons.favorite);
+    }
+  }
 
   Future<void> addSong() async {
-    return songs.doc('0')
-        .update(<String, dynamic>{
-      'Likes': FieldValue.increment(1),
-    })
-        .then((value) => print("Song info Added"))
-        .catchError((error) => print("Failed to add song info: $error"));
+    print(_likedsong );
+    print('LIKED');
+    if (_likedsong != metadata?[2]){
+      setState(() {
+        _likedsong = metadata?[2] ?? 'hello';
+          _ispressed = true;});
+      return songs.doc('0')
+          .update(<String, dynamic>{
+        'Likes': FieldValue.increment(1),
+      })
+          .then((value) => print("Song info Added"))
+          .catchError((error) => print("Failed to add song info: $error"));}
+    else{ print('hello');}
   }
 
   @override
@@ -185,10 +201,7 @@ class _HomePageState extends State<HomePage> {
                               width: 5.0,
                             )
                             .withRounded(value: 60.0)
-                            .make()
-                            .onInkDoubleTap(() {
-                          _playMusic(rad.url);
-                        }).p16();
+                            .make().p16();
                       },
                     ).centered()
                   : Center(
@@ -196,30 +209,33 @@ class _HomePageState extends State<HomePage> {
                         backgroundColor: Colors.white,
                       ),
                     ),
-              Align(
+                Align(
                 alignment: Alignment.bottomCenter,
-                child: [
-                  if (_isPlaying)
-                    "${metadata?[0]} 0, ${metadata?[1]} 1, ${metadata?[2]} 2, ${metadata?[3]} 3,".text.green900.makeCentered(),
-    RaisedButton(onPressed: addSong).icon(const Icons.favorite).iconSize: 100, color: Colors.black, highlightColor: Colors.red,),
-    Icon(
+
+                child: [Text(getInfo(),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  [Icon(
                     _isPlaying
-                        ? CupertinoIcons.stop_circle
+                    ? CupertinoIcons.stop_circle
                         : CupertinoIcons.play_circle,
                     size: 100.0,
-                  )
-                      .shimmer(
-                          primaryColor: Vx.red500, secondaryColor: Colors.green)
-                      .onInkTap(() {
+                    ).shimmer(primaryColor: Vx.red500, secondaryColor: Colors.green).onInkTap(() {
                     if (_isPlaying) {
-                      _audioPlayer.pause();
+                    _audioPlayer.pause();
                     } else {
-                      _playMusic(_selectedRadio!.url);
-                    }
-                  })
-                ].vStack(),
-              ).pOnly(bottom: context.percentHeight * 1)
-              ,
+                    _playMusic(_selectedRadio!.url);
+                    }}),
+                  IconButton(
+                    icon: check(),
+                    color: _ispressed? Colors.redAccent : Colors.grey,
+                    iconSize: 70,
+                    onPressed: addSong,
+                    ),
+                 ].hStack(),].vStack()
+              ).pOnly(bottom: context.percentHeight * 1),
               Column(
                 children: <Widget>[
                   Text(
@@ -251,6 +267,17 @@ class _HomePageState extends State<HomePage> {
               ),
             ])));
   }
+
+   String getInfo() {
+     setState(() {
+       if (metadata?[0] != null){
+       _info = metadata?[0] ?? '';}
+       if (metadata?[1] != null){
+         _info1 = metadata?[0] ?? '';
+     }});
+     return _info+'\n'+_info1;
+   }
+
 }
 
 class NewScreen extends StatelessWidget {
