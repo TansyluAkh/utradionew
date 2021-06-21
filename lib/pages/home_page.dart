@@ -1,4 +1,5 @@
 import '/model/radio.dart';
+import '/model/song.dart';
 import 'package:radio_player/radio_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -23,12 +24,14 @@ class _HomePageState extends State<HomePage> {
   bool _ispressed = false;
   String _info = '';
   String _info1 = '';
+  int _likednum = 0;
   @override
   void initState() {
     super.initState();
     fetchRadios();
     initRadioPlayer();
   }
+
 
   void initRadioPlayer() {
     _audioPlayer.stateStream.listen((value) {
@@ -66,21 +69,31 @@ class _HomePageState extends State<HomePage> {
   CollectionReference songs = FirebaseFirestore.instance.collection('songs');
   Icon check(){
     if (_likedsong != metadata?[2]){
-      return Icon(Icons.favorite_border_outlined);
+      return Icon(Icons.local_fire_department_outlined);
     }
     else{
-      return Icon(Icons.favorite);
+      return Icon(Icons.local_fire_department_sharp);
     }
+  }
+  String getLikes(docId){
+    songs.doc(docId).snapshots().listen((event) {
+      setState(() {
+        _likednum = event.get("Likes");
+        print(_likednum.toString()+ ' LIKESNUM');
+      });
+    });
+    return _likednum.toString();
   }
 
   Future<void> addSong() async {
+
     print(_likedsong );
     print('LIKED');
     if (_likedsong != metadata?[2]){
       setState(() {
         _likedsong = metadata?[2] ?? 'hello';
           _ispressed = true;});
-      return songs.doc('0')
+      return songs.doc(_likedsong)
           .update(<String, dynamic>{
         'Likes': FieldValue.increment(1),
       })
@@ -97,32 +110,7 @@ class _HomePageState extends State<HomePage> {
             color: _selectedColor,
             // ignore: unnecessary_null_comparison
             child: radios != null
-                ? [
-                    100.heightBox,
-                    "Өстәмәләр".text.xl.white.semiBold.make().px16(),
-                    20.heightBox,
-                    ListView(padding: Vx.m0, shrinkWrap: true, children: [
-                      ListTile(
-                          title: Text('Баш бит'),
-                          leading: Icon(
-                              IconData(57521, fontFamily: 'MaterialIcons')),
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                                builder: (context) => NewScreen()));
-                          }),
-                      ListTile(
-                          title: Text('Безнең турында'),
-                          leading: Icon(
-                              IconData(57521, fontFamily: 'MaterialIcons'))),
-                      ListTile(
-                          title: Text('Элемтә'),
-                          leading: Icon(
-                              IconData(57521, fontFamily: 'MaterialIcons'))),
-                      ListTile(
-                          title: Text('Уртаклашырга'),
-                          leading: Icon(
-                              IconData(57521, fontFamily: 'MaterialIcons')))
-                    ]).expand()
+                ?
                   ].vStack(crossAlignment: CrossAxisAlignment.start)
                 : const Offstage(),
           ),
@@ -221,7 +209,7 @@ class _HomePageState extends State<HomePage> {
                     _isPlaying
                     ? CupertinoIcons.stop_circle
                         : CupertinoIcons.play_circle,
-                    size: 100.0,
+                    size: 50.0,
                     ).shimmer(primaryColor: Vx.red500, secondaryColor: Colors.green).onInkTap(() {
                     if (_isPlaying) {
                     _audioPlayer.pause();
@@ -231,40 +219,16 @@ class _HomePageState extends State<HomePage> {
                   IconButton(
                     icon: check(),
                     color: _ispressed? Colors.redAccent : Colors.grey,
-                    iconSize: 70,
+                    iconSize: 50,
                     onPressed: addSong,
+                    ),
+                    Text(getLikes('0'),
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 50,),
                     ),
                  ].hStack(),].vStack()
               ).pOnly(bottom: context.percentHeight * 1),
-              Column(
-                children: <Widget>[
-                  Text(
-                    "Register",
-                    style:
-                        TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "Register",
-                    style:
-                        TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "Register",
-                    style:
-                        TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "Register",
-                    style:
-                        TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
-                  ),
-                  Text(
-                    "Register",
-                    style:
-                        TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
             ])));
   }
 
@@ -280,40 +244,3 @@ class _HomePageState extends State<HomePage> {
 
 }
 
-class NewScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-        color: Colors.white,
-        child: VStack(
-          [
-            [
-              " - Introduction".text.gray500.widest.sm.make(),
-              10.heightBox,
-              "@googledevexpert for Flutter, Firebase, Dart & Web.\nPublic Speaker, Blogger, Entrepreneur & YouTuber.\nFounder of MTechViral."
-                  .text
-                  .white
-                  .xl3
-                  .maxLines(5)
-                  .make()
-                  .w(context.isMobile
-                      ? context.screenWidth
-                      : context.percentWidth * 40),
-              20.heightBox,
-            ].vStack(),
-            RaisedButton(
-              onPressed: () {
-                //
-              },
-              hoverColor: Vx.purple700,
-              shape: Vx.roundedSm,
-              color: Colors.deepPurpleAccent,
-              textColor: Colors.black,
-              child: "Visit mtechviral.com".text.make(),
-            ).h(50)
-          ],
-          crossAlignment: CrossAxisAlignment.center,
-          alignment: MainAxisAlignment.center,
-        ));
-  }
-}
