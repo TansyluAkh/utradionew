@@ -1,5 +1,5 @@
 import '/model/radio.dart';
-import '/model/song.dart';
+import '/pages/loading.dart';
 import 'package:radio_player/radio_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,13 +18,14 @@ class _HomePageState extends State<HomePage> {
   RadioPlayer _audioPlayer = RadioPlayer();
   List<MyRadio>? radios;
   MyRadio? _selectedRadio;
-  Color _selectedColor = Colors.white;
   bool _isPlaying = false;
   List<String>? metadata;
   bool _ispressed = false;
-  String _info = '';
-  String _info1 = '';
-  int _likednum = 0;
+  String _info0 = 'empty';
+  String _info = ' ';
+  String _info1 = ' ';
+  String _doc = '0';
+
   @override
   void initState() {
     super.initState();
@@ -32,18 +33,21 @@ class _HomePageState extends State<HomePage> {
     initRadioPlayer();
   }
 
-
   void initRadioPlayer() {
     _audioPlayer.stateStream.listen((value) {
       setState(() {
         _isPlaying = value;
       });
     });
-
     _audioPlayer.metadataStream.listen((value) {
       setState(() {
-        metadata = value;
+        if (value[2] != '') {
+          metadata = value;
+        } else {
+          metadata = ['hello', 'hello', 'hello'];
+        }
         print(metadata);
+        getInfo();
       });
     });
   }
@@ -52,7 +56,6 @@ class _HomePageState extends State<HomePage> {
     final radioJson = await rootBundle.loadString("assets/radio.json");
     radios = MyRadioList.fromJson(radioJson).radios;
     _selectedRadio = radios![0];
-    _selectedColor = Color(int.tryParse(_selectedRadio!.color)!);
     print(radios);
     setState(() {});
   }
@@ -65,68 +68,105 @@ class _HomePageState extends State<HomePage> {
     print(_selectedRadio!.name);
     setState(() {});
   }
+
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   CollectionReference songs = FirebaseFirestore.instance.collection('songs');
-  Icon check(){
-    if (_likedsong != metadata?[2]){
-      return Icon(Icons.local_fire_department_outlined);
-    }
-    else{
-      return Icon(Icons.local_fire_department_sharp);
+
+  IconData check() {
+    if (_likedsong != _info1) {
+      return CupertinoIcons.suit_heart;
+    } else {
+      return CupertinoIcons.suit_heart_fill;
     }
   }
-  String getLikes(docId){
-    songs.doc(docId).snapshots().listen((event) {
-      setState(() {
-        _likednum = event.get("Likes");
-        print(_likednum.toString()+ ' LIKESNUM');
-      });
+
+  String getLikes(docId) {
+    if (docId.length < 1) {
+      docId = _info0;
+      getLikes(docId);
+    }
+    songs.doc(docId).get().then((DocumentSnapshot documentSnapshot) {
+      if (documentSnapshot.exists) {
+        print('Document exists on the database');
+        setState(() {
+          _doc = documentSnapshot.get('Likes').toString();
+          print(_doc);
+        });
+      } else {
+        var type = _selectedRadio?.category ?? "not stated";
+        getInfo();
+        songs
+            .doc(docId)
+            .set({
+              'Artist': _info, // John Doe
+              'Type': type, // Stokes and Sons
+              'Title': _info1, // 42
+              'Likes': 0,
+              'Streams': 1,
+            })
+            .then((value) => print("User Added"))
+            .catchError((error) => print("Failed to add user: $error"));
+      }
     });
-    return _likednum.toString();
+    return _doc;
   }
 
   Future<void> addSong() async {
-
-    print(_likedsong );
+    print(_likedsong);
+    getInfo();
     print('LIKED');
-    if (_likedsong != metadata?[2]){
+    if (_likedsong != _info1) {
       setState(() {
-        _likedsong = metadata?[2] ?? 'hello';
-          _ispressed = true;});
-      return songs.doc(_likedsong)
+        _likedsong = _info1;
+        _ispressed = true;
+      });
+      return songs
+          .doc(_info1)
           .update(<String, dynamic>{
-        'Likes': FieldValue.increment(1),
-      })
+            'Likes': FieldValue.increment(1),
+          })
           .then((value) => print("Song info Added"))
-          .catchError((error) => print("Failed to add song info: $error"));}
-    else{ print('hello');}
+          .catchError((error) => print("Failed to add song info: $error"));
+    } else {
+      getLikes(_likedsong);
+      print('hello');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: Drawer(
-          child: Container(
-            color: _selectedColor,
-            // ignore: unnecessary_null_comparison
-            child: radios != null
-                ?
-                  ].vStack(crossAlignment: CrossAxisAlignment.start)
-                : const Offstage(),
-          ),
-        ),
         body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             reverse: false,
             child: Column(children: [
               [
-                AppBar(
-                  title: "UT radio".text.xl4.bold.white.make().shimmer(
-                      primaryColor: Vx.red500, secondaryColor: Colors.green),
-                  backgroundColor: Colors.transparent,
-                  elevation: 0.0,
-                  centerTitle: true,
-                ).h(100.0).p16(),
+                Padding(
+                  child: Text('URBANTATAR',
+                  style: const TextStyle(
+                  fontSize: 20,
+                )).shimmer(primaryColor: Vx.red500, secondaryColor: Colors.green),
+                  padding: EdgeInsets.only(top:70)),
+                VxSwiper.builder(
+                  itemCount: 2,
+                  height: 50.0,
+                  viewportFraction: 1.0,
+                  autoPlay: true,
+                  autoPlayAnimationDuration: 5.seconds,
+                  autoPlayCurve: Curves.linear,
+                  enableInfiniteScroll: true,
+                  itemBuilder: (context, index) {
+                    final s = [_info, _info1][index];
+                    return Chip(
+                      autofocus: true,
+                      label: Text(s,
+                          style: const TextStyle(
+                            fontSize: 20,
+                          )),
+                      backgroundColor: Colors.transparent,
+                    );
+                  },
+                )
               ].vStack(alignment: MainAxisAlignment.start),
               30.heightBox,
               radios != null
@@ -136,8 +176,13 @@ class _HomePageState extends State<HomePage> {
                       enlargeCenterPage: true,
                       onPageChanged: (index) {
                         _selectedRadio = radios![index];
-                        final colorHex = radios![index].color;
-                        _selectedColor = Color(int.tryParse(colorHex)!);
+                        _audioPlayer.pause();
+                        _playMusic(_selectedRadio!.url);
+                        songs.doc(_info1).update(<String, dynamic>{
+                          'Streams': FieldValue.increment(1),
+                        });
+                        getInfo();
+                        getLikes(_info1);
                         setState(() {});
                       },
                       itemBuilder: (context, index) {
@@ -189,7 +234,8 @@ class _HomePageState extends State<HomePage> {
                               width: 5.0,
                             )
                             .withRounded(value: 60.0)
-                            .make().p16();
+                            .make()
+                            .p16();
                       },
                     ).centered()
                   : Center(
@@ -197,50 +243,46 @@ class _HomePageState extends State<HomePage> {
                         backgroundColor: Colors.white,
                       ),
                     ),
-                Align(
-                alignment: Alignment.bottomCenter,
-
-                child: [Text(getInfo(),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  [Icon(
-                    _isPlaying
-                    ? CupertinoIcons.stop_circle
-                        : CupertinoIcons.play_circle,
-                    size: 50.0,
-                    ).shimmer(primaryColor: Vx.red500, secondaryColor: Colors.green).onInkTap(() {
-                    if (_isPlaying) {
-                    _audioPlayer.pause();
-                    } else {
-                    _playMusic(_selectedRadio!.url);
-                    }}),
-                  IconButton(
-                    icon: check(),
-                    color: _ispressed? Colors.redAccent : Colors.grey,
-                    iconSize: 50,
-                    onPressed: addSong,
-                    ),
-                    Text(getLikes('0'),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 50,),
-                    ),
-                 ].hStack(),].vStack()
-              ).pOnly(bottom: context.percentHeight * 1),
+              Align(
+                  alignment: Alignment.bottomCenter,
+                  child:
+                  Padding(
+                    padding: EdgeInsets.all(30.0) ,
+                    child:
+                      PlayButton(
+                          pauseIcon: Icon(
+                          Icons.pause,
+                          color: Colors.grey.shade800,
+                          size: 70,
+                        ),
+                          playIcon: Icon(
+                          Icons.play_arrow_rounded,
+                          color: Colors.grey.shade800,
+                          size: 70,
+                        ),
+                        onPressed: () {
+                            if (_isPlaying)
+                            {_audioPlayer.pause();
+                            getInfo();}
+                            else {
+                              _playMusic(_selectedRadio!.url);
+                              getInfo();}},
+                  )))
             ])));
   }
 
-   String getInfo() {
-     setState(() {
-       if (metadata?[0] != null){
-       _info = metadata?[0] ?? '';}
-       if (metadata?[1] != null){
-         _info1 = metadata?[0] ?? '';
-     }});
-     return _info+'\n'+_info1;
-   }
-
+  void getInfo() {
+    setState(() {
+      if (metadata?[1] != null) {
+        _info = metadata?[1] ?? 'x';
+      }
+      if (metadata?[0] != null) {
+        _info0 = metadata?[0] ?? 'x';
+      }
+      if (metadata?[2] != null) {
+        _info1 = metadata?[2] ?? 'x';
+      }
+    });
+    return;
+  }
 }
-

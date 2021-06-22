@@ -1,0 +1,25 @@
+// Text(_info + '\n'+ _info1),
+                        // IconButton(icon: Icon(check()),
+                        //       color: _ispressed ? Colors.redAccent : Colors.black,
+                        //       iconSize: 40,
+                        //       onPressed: addSong,
+                        //     ),
+                        //   Text('    '+ getLikes(_info1),
+                        //       textAlign: TextAlign.center,
+                        //       overflow: TextOverflow.ellipsis,
+                        //       style: const TextStyle(
+                        //         fontSize: 20,
+                        //       )),].hStack(),
+                        // Icon(
+                        //   _isPlaying
+                        //       ? CupertinoIcons.pause
+                        //       : CupertinoIcons.play,
+                        //   size: 100.0,
+                        // ).shimmer(primaryColor: Vx.red500, secondaryColor: Colors.green).onInkTap(() {
+                        //   if (_isPlaying) {
+                        //     _audioPlayer.pause();
+                        //     getInfo();
+                        //   } else {
+                        //     _playMusic(_selectedRadio!.url);
+                        //     getInfo();
+                        //   }}),
