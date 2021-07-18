@@ -190,63 +190,32 @@ class _HomePageState extends State<HomePage> {
                 },
                 itemBuilder: (context, index) {
                   final rad = radios![index];
-
-                  return VxBox(
-                      child: ZStack(
-                        [
-                          Positioned(
-                            top: 0.0,
-                            right: 0.0,
-                            child: VxBox(
-                              child: rad.category.text.uppercase.white
-                                  .make()
-                                  .shimmer(
-                                  primaryColor: Vx.red500,
-                                  secondaryColor: Colors.green)
-                                  .px16(),
-                            )
-                                .height(40)
-                                .transparent
-                                .alignCenter
-                                .withRounded(value: 10.0)
-                                .make(),
-                          ),
-                          Align(
-                            alignment: Alignment.bottomCenter,
-                            child: VStack(
-                              [
-                                rad.name.text.xl3.white.bold.make(),
-                                5.heightBox,
-                                rad.tagline.text.sm.white.semiBold.make(),
-                              ],
-                              crossAlignment: CrossAxisAlignment.center,
-                            ),
-                          )
-                        ],
-                      ))
-                      .clip(Clip.antiAlias)
-                      .bgImage(
-                    DecorationImage(
-                        image: NetworkImage(rad.image),
-                        fit: BoxFit.cover,
-                        colorFilter: ColorFilter.mode(
-                            Colors.black.withOpacity(0),
-                            BlendMode.darken)),
+                  return Stack(
+                    alignment: Alignment.center,
+                    children: [Blob.fromID(
+                      size: 300,
+                      styles: BlobStyles(
+                      fillType: BlobFillType.stroke,
+                      strokeWidth: 6,
+                      gradient: LinearGradient(
+                      colors: [Colors.green, Colors.redAccent])
+                      .createShader(Rect.fromLTRB(0, 0, 300, 300)),
+                  ),
+                  id: ['9-6-38406'],
+                  ),
+                  Container(
+                  width: 270,
+                  child: ClipPath(
+                             clipper: BlobClipper(id: '9-6-38406', edgesCount: 5),
+                             child: Image.network(rad.image),
                   )
-                      .border(
-                    width: 5.0,
-                  )
-                      .withRounded(value: 60.0)
-                      .make()
-                      .p16();
-                },
-              ).centered()
-                  : Center(
-                child: CircularProgressIndicator(
-                  backgroundColor: Colors.white,
-                ),
-              ),
-              Align(
+                  ),],);}):
+                    Center(
+                    child: CircularProgressIndicator(
+                    backgroundColor: Colors.white,
+                    ),
+                    ),
+                  Align(
                   alignment: Alignment.bottomCenter,
                   child:
                   Padding(
@@ -257,12 +226,14 @@ class _HomePageState extends State<HomePage> {
                       color:  Colors.green,
                       fillType:  BlobFillType.fill,
                       gradient: LinearGradient(colors:  _isPlaying
-                      ? [Colors.redAccent, Colors.lightGreenAccent] : [Colors.blue, Colors.lightGreenAccent])
+                      ? [Colors.redAccent, Colors.green] : [Colors.blue, Colors.lightGreenAccent])
                           .createShader(Rect.fromLTRB(0, 0, 300, 300)),
                       strokeWidth:3,
                       ),
                       loop: true,
                       size: 150,
+                        edgesCount: 6,
+                        minGrowth: 7,
                       controller: blobCtrl,
                       child: Icon(
                         _isPlaying
@@ -278,13 +249,12 @@ class _HomePageState extends State<HomePage> {
                         }
                       }),
                       ),
-
                   ))
-            ])));
-  }
+            ])));}
 
-  void getInfo() {
+    void getInfo() {
     setState(() {
+      print(metadata);
       if (metadata?[1] != null) {
         _info = metadata?[1] ?? 'x';
       }
