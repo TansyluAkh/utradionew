@@ -1,12 +1,11 @@
 import '/model/radio.dart';
-import '/pages/loading.dart';
 import 'package:radio_player/radio_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart' hide Blob;
+import 'package:blobs/blobs.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -19,8 +18,8 @@ class _HomePageState extends State<HomePage> {
   List<MyRadio>? radios;
   MyRadio? _selectedRadio;
   bool _isPlaying = false;
-  List<String>? metadata;
   bool _ispressed = false;
+  List<String>? metadata;
   String _info0 = 'empty';
   String _info = ' ';
   String _info1 = ' ';
@@ -54,7 +53,9 @@ class _HomePageState extends State<HomePage> {
 
   fetchRadios() async {
     final radioJson = await rootBundle.loadString("assets/radio.json");
-    radios = MyRadioList.fromJson(radioJson).radios;
+    radios = MyRadioList
+        .fromJson(radioJson)
+        .radios;
     _selectedRadio = radios![0];
     print(radios);
     setState(() {});
@@ -98,12 +99,12 @@ class _HomePageState extends State<HomePage> {
         songs
             .doc(docId)
             .set({
-              'Artist': _info, // John Doe
-              'Type': type, // Stokes and Sons
-              'Title': _info1, // 42
-              'Likes': 0,
-              'Streams': 1,
-            })
+          'Artist': _info, // John Doe
+          'Type': type, // Stokes and Sons
+          'Title': _info1, // 42
+          'Likes': 0,
+          'Streams': 1,
+        })
             .then((value) => print("User Added"))
             .catchError((error) => print("Failed to add user: $error"));
       }
@@ -123,8 +124,8 @@ class _HomePageState extends State<HomePage> {
       return songs
           .doc(_info1)
           .update(<String, dynamic>{
-            'Likes': FieldValue.increment(1),
-          })
+        'Likes': FieldValue.increment(1),
+      })
           .then((value) => print("Song info Added"))
           .catchError((error) => print("Failed to add song info: $error"));
     } else {
@@ -135,6 +136,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    BlobController blobCtrl = BlobController();
     return Scaffold(
         body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -142,11 +144,12 @@ class _HomePageState extends State<HomePage> {
             child: Column(children: [
               [
                 Padding(
-                  child: Text('URBANTATAR',
-                  style: const TextStyle(
-                  fontSize: 20,
-                )).shimmer(primaryColor: Vx.red500, secondaryColor: Colors.green),
-                  padding: EdgeInsets.only(top:70)),
+                    child: Text('URBANTATAR',
+                        style: const TextStyle(
+                          fontSize: 20,
+                        )).shimmer(
+                        primaryColor: Vx.red500, secondaryColor: Colors.green),
+                    padding: EdgeInsets.only(top: 70)),
                 VxSwiper.builder(
                   itemCount: 2,
                   height: 50.0,
@@ -171,103 +174,112 @@ class _HomePageState extends State<HomePage> {
               30.heightBox,
               radios != null
                   ? VxSwiper.builder(
-                      itemCount: radios!.length,
-                      aspectRatio: 1.0,
-                      enlargeCenterPage: true,
-                      onPageChanged: (index) {
-                        _selectedRadio = radios![index];
-                        _audioPlayer.pause();
-                        _playMusic(_selectedRadio!.url);
-                        songs.doc(_info1).update(<String, dynamic>{
-                          'Streams': FieldValue.increment(1),
-                        });
-                        getInfo();
-                        getLikes(_info1);
-                        setState(() {});
-                      },
-                      itemBuilder: (context, index) {
-                        final rad = radios![index];
+                itemCount: radios!.length,
+                aspectRatio: 1.0,
+                enlargeCenterPage: true,
+                onPageChanged: (index) {
+                  _selectedRadio = radios![index];
+                  _audioPlayer.pause();
+                  _playMusic(_selectedRadio!.url);
+                  songs.doc(_info1).update(<String, dynamic>{
+                    'Streams': FieldValue.increment(1),
+                  });
+                  getInfo();
+                  getLikes(_info1);
+                  setState(() {});
+                },
+                itemBuilder: (context, index) {
+                  final rad = radios![index];
 
-                        return VxBox(
-                                child: ZStack(
-                          [
-                            Positioned(
-                              top: 0.0,
-                              right: 0.0,
-                              child: VxBox(
-                                child: rad.category.text.uppercase.white
-                                    .make()
-                                    .shimmer(
-                                        primaryColor: Vx.red500,
-                                        secondaryColor: Colors.green)
-                                    .px16(),
-                              )
-                                  .height(40)
-                                  .transparent
-                                  .alignCenter
-                                  .withRounded(value: 10.0)
-                                  .make(),
+                  return VxBox(
+                      child: ZStack(
+                        [
+                          Positioned(
+                            top: 0.0,
+                            right: 0.0,
+                            child: VxBox(
+                              child: rad.category.text.uppercase.white
+                                  .make()
+                                  .shimmer(
+                                  primaryColor: Vx.red500,
+                                  secondaryColor: Colors.green)
+                                  .px16(),
+                            )
+                                .height(40)
+                                .transparent
+                                .alignCenter
+                                .withRounded(value: 10.0)
+                                .make(),
+                          ),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: VStack(
+                              [
+                                rad.name.text.xl3.white.bold.make(),
+                                5.heightBox,
+                                rad.tagline.text.sm.white.semiBold.make(),
+                              ],
+                              crossAlignment: CrossAxisAlignment.center,
                             ),
-                            Align(
-                              alignment: Alignment.bottomCenter,
-                              child: VStack(
-                                [
-                                  rad.name.text.xl3.white.bold.make(),
-                                  5.heightBox,
-                                  rad.tagline.text.sm.white.semiBold.make(),
-                                ],
-                                crossAlignment: CrossAxisAlignment.center,
-                              ),
-                            )
-                          ],
-                        ))
-                            .clip(Clip.antiAlias)
-                            .bgImage(
-                              DecorationImage(
-                                  image: NetworkImage(rad.image),
-                                  fit: BoxFit.cover,
-                                  colorFilter: ColorFilter.mode(
-                                      Colors.black.withOpacity(0),
-                                      BlendMode.darken)),
-                            )
-                            .border(
-                              width: 5.0,
-                            )
-                            .withRounded(value: 60.0)
-                            .make()
-                            .p16();
-                      },
-                    ).centered()
+                          )
+                        ],
+                      ))
+                      .clip(Clip.antiAlias)
+                      .bgImage(
+                    DecorationImage(
+                        image: NetworkImage(rad.image),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(
+                            Colors.black.withOpacity(0),
+                            BlendMode.darken)),
+                  )
+                      .border(
+                    width: 5.0,
+                  )
+                      .withRounded(value: 60.0)
+                      .make()
+                      .p16();
+                },
+              ).centered()
                   : Center(
-                      child: CircularProgressIndicator(
-                        backgroundColor: Colors.white,
-                      ),
-                    ),
+                child: CircularProgressIndicator(
+                  backgroundColor: Colors.white,
+                ),
+              ),
               Align(
                   alignment: Alignment.bottomCenter,
                   child:
                   Padding(
-                    padding: EdgeInsets.all(30.0) ,
+                    padding: EdgeInsets.all(30.0),
                     child:
-                      PlayButton(
-                          pauseIcon: Icon(
-                          Icons.pause,
-                          color: Colors.grey.shade800,
-                          size: 70,
-                        ),
-                          playIcon: Icon(
-                          Icons.play_arrow_rounded,
-                          color: Colors.grey.shade800,
-                          size: 70,
-                        ),
-                        onPressed: () {
-                            if (_isPlaying)
-                            {_audioPlayer.pause();
-                            getInfo();}
-                            else {
-                              _playMusic(_selectedRadio!.url);
-                              getInfo();}},
-                  )))
+                      Blob.animatedRandom(
+                      styles:  BlobStyles(
+                      color:  Colors.green,
+                      fillType:  BlobFillType.fill,
+                      gradient: LinearGradient(colors:  _isPlaying
+                      ? [Colors.redAccent, Colors.lightGreenAccent] : [Colors.blue, Colors.lightGreenAccent])
+                          .createShader(Rect.fromLTRB(0, 0, 300, 300)),
+                      strokeWidth:3,
+                      ),
+                      loop: true,
+                      size: 150,
+                      controller: blobCtrl,
+                      child: Icon(
+                        _isPlaying
+                            ? CupertinoIcons.pause_fill
+                            : CupertinoIcons.play_arrow_solid,
+                        size: 70.0,
+                      )
+                          .onInkTap(() {
+                        if (_isPlaying) {
+                          _audioPlayer.pause();
+                        } else {
+                          _playMusic(_selectedRadio!.url);
+                        }
+                      }),
+                      ),
+
+                  ))
             ])));
   }
 
