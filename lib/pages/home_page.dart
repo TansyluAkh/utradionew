@@ -1,5 +1,6 @@
 import '/model/radio.dart';
 import 'package:radio_player/radio_player.dart';
+import '/pages/loading.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -136,48 +137,59 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery
+        .of(context)
+        .size
+        .width;
+    double height = MediaQuery
+        .of(context)
+        .size
+        .height;
     BlobController blobCtrl = BlobController();
     return Scaffold(
-        body: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            reverse: false,
-            child: Column(children: [
-              [
-                Padding(
-                    child: Text('URBANTATAR',
-                        style: const TextStyle(
-                          fontSize: 20,
-                        )).shimmer(
-                        primaryColor: Vx.red500, secondaryColor: Colors.green),
-                    padding: EdgeInsets.only(top: 70)),
-                VxSwiper.builder(
-                  itemCount: 2,
-                  height: 50.0,
-                  viewportFraction: 1.0,
-                  autoPlay: true,
-                  autoPlayAnimationDuration: 5.seconds,
-                  autoPlayCurve: Curves.linear,
-                  enableInfiniteScroll: true,
-                  itemBuilder: (context, index) {
-                    final s = [_info, _info1][index];
-                    return Chip(
-                      autofocus: true,
-                      label: Text(s,
-                          style: const TextStyle(
-                            fontSize: 20,
-                          )),
-                      backgroundColor: Colors.transparent,
-                    );
-                  },
-                )
-              ].vStack(alignment: MainAxisAlignment.start),
-              30.heightBox,
-              radios != null
-                  ? VxSwiper.builder(
+        body: Column(children: [
+            Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+                padding: EdgeInsets.only(top: height * 0.1),
+                child: Text('URBANTATAR',
+                    style: const TextStyle(
+                      fontSize: 20,
+                    ))
+                    .shimmer(
+                    primaryColor: Color(0xff9CA97B),
+                    secondaryColor: Color(0xffE2432D)))),
+          ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: height*0.1),
+            child:
+            VxSwiper.builder(
+              itemCount: 2,
+              height: height * 0.1,
+              viewportFraction: 1.0,
+              autoPlay: true,
+              autoPlayAnimationDuration: 5.seconds,
+              autoPlayCurve: Curves.linear,
+              enableInfiniteScroll: true,
+              itemBuilder: (context, index) {
+                final s = [_info, _info1][index];
+                return Chip(
+                  autofocus: true,
+                  label: Text(s,
+                      style: const TextStyle(
+                        fontSize: 20,
+                      )),
+                  backgroundColor: Colors.transparent,
+                );
+              },
+            )),
+            radios != null
+                ? VxSwiper.builder(
+                height: width,
                 itemCount: radios!.length,
                 aspectRatio: 1.0,
                 enlargeCenterPage: true,
                 onPageChanged: (index) {
+                  blobCtrl.change();
                   _selectedRadio = radios![index];
                   _audioPlayer.pause();
                   _playMusic(_selectedRadio!.url);
@@ -190,69 +202,52 @@ class _HomePageState extends State<HomePage> {
                 },
                 itemBuilder: (context, index) {
                   final rad = radios![index];
-                  return Stack(
-                    alignment: Alignment.center,
-                    children: [Blob.fromID(
-                      size: 300,
-                      styles: BlobStyles(
-                      fillType: BlobFillType.stroke,
-                      strokeWidth: 6,
-                      gradient: LinearGradient(
-                      colors: [Colors.green, Colors.redAccent])
-                      .createShader(Rect.fromLTRB(0, 0, 300, 300)),
-                  ),
-                  id: ['9-6-38406'],
-                  ),
-                  Container(
-                  width: 270,
-                  child: ClipPath(
-                             clipper: BlobClipper(id: '9-6-38406', edgesCount: 5),
-                             child: Image.network(rad.image),
-                  )
-                  ),],);}):
-                    Center(
-                    child: CircularProgressIndicator(
-                    backgroundColor: Colors.white,
-                    ),
-                    ),
-                  Align(
-                  alignment: Alignment.bottomCenter,
-                  child:
-                  Padding(
-                    padding: EdgeInsets.all(30.0),
-                    child:
-                      Blob.animatedRandom(
-                      styles:  BlobStyles(
-                      color:  Colors.green,
-                      fillType:  BlobFillType.fill,
-                      gradient: LinearGradient(colors:  _isPlaying
-                      ? [Colors.redAccent, Colors.green] : [Colors.blue, Colors.lightGreenAccent])
-                          .createShader(Rect.fromLTRB(0, 0, 300, 300)),
-                      strokeWidth:3,
-                      ),
-                      loop: true,
-                      size: 150,
-                        edgesCount: 6,
-                        minGrowth: 7,
-                      controller: blobCtrl,
-                      child: Icon(
-                        _isPlaying
-                            ? CupertinoIcons.pause_fill
-                            : CupertinoIcons.play_arrow_solid,
-                        size: 70.0,
-                      )
-                          .onInkTap(() {
-                        if (_isPlaying) {
-                          _audioPlayer.pause();
-                        } else {
-                          _playMusic(_selectedRadio!.url);
-                        }
-                      }),
-                      ),
-                  ))
-            ])));}
+                  return
+                    ClipPage(url: rad.image,
+                        width: width * 0.9,
+                        height: width,
+                        redcolor: Color(int.parse(rad.redcolor)),
+                        greencolor: Color(int.parse(rad.greencolor)));
+                })
+                : Center(
+              child: CircularProgressIndicator(
+                backgroundColor: Colors.white,
+              ),
+            ),
+            Blob.animatedRandom(
+              styles: BlobStyles(
+                color: Colors.green,
+                fillType: BlobFillType.fill,
+                gradient: LinearGradient(
+                    colors: _isPlaying
+                    ? [Colors.redAccent, Colors.green]
+                    : [Colors.white, Colors.grey])
+                    .createShader(Rect.fromLTRB(0, 0, 300, 300)),
+                strokeWidth: 3,
+              ),
+              loop: true,
+              size: height * 0.1,
+              edgesCount: 6,
+              minGrowth: 7,
+              controller: blobCtrl,
+              child: Icon(
+                _isPlaying
+                    ? CupertinoIcons.pause_fill
+                    : CupertinoIcons.play_arrow_solid,
+                size: height * 0.07,
+              ).onInkTap(() {
+                if (_isPlaying) {
+                  _audioPlayer.pause();
+                } else {
+                  _playMusic(_selectedRadio!.url);
+                }
+              }),
+            ),
+            ])
+    );
+  }
 
-    void getInfo() {
+  void getInfo() {
     setState(() {
       print(metadata);
       if (metadata?[1] != null) {

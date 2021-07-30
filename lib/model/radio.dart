@@ -51,8 +51,8 @@ class MyRadio {
   final int id;
   final int order;
   final String name;
-  final String tagline;
-  final String color;
+  final String greencolor;
+  final String redcolor;
   final String desc;
   final String url;
   final String category;
@@ -63,8 +63,8 @@ class MyRadio {
     required this.id,
     required this.order,
     required this.name,
-    required this.tagline,
-    required this.color,
+    required this.greencolor,
+    required this.redcolor,
     required this.desc,
     required this.url,
     required this.category,
@@ -77,7 +77,7 @@ class MyRadio {
     required int id,
     required int order,
     required String name,
-    required String tagline,
+    required String greencolor,
     required String color,
     required String desc,
     required String url,
@@ -90,8 +90,8 @@ class MyRadio {
       id: id ,
       order: order ,
       name: name,
-      tagline: tagline ,
-      color: color ,
+      greencolor: greencolor ,
+      redcolor: redcolor,
       desc: desc ,
       url: url ,
       category: category ,
@@ -106,8 +106,8 @@ class MyRadio {
       'id': id,
       'order': order,
       'name': name,
-      'tagline': tagline,
-      'color': color,
+      'greencolor': greencolor,
+      'redcolor': redcolor,
       'desc': desc,
       'url': url,
       'category': category,
@@ -122,8 +122,8 @@ class MyRadio {
       id: map['id'],
       order: map['order'],
       name: map['name'],
-      tagline: map['tagline'],
-      color: map['color'],
+      greencolor: map['greencolor'],
+      redcolor: map['redcolor'],
       desc: map['desc'],
       url: map['url'],
       category: map['category'],
@@ -140,7 +140,7 @@ class MyRadio {
 
   @override
   String toString() {
-    return 'MyRadio(id: $id, order: $order, name: $name, tagline: $tagline, color: $color, desc: $desc, url: $url, category: $category, icon: $icon, image: $image, lang: $lang)';
+    return 'MyRadio(id: $id, order: $order, name: $name, greencolor: $greencolor, redcolor: $redcolor, desc: $desc, url: $url, category: $category, icon: $icon, image: $image, lang: $lang)';
   }
 
   @override
@@ -151,8 +151,8 @@ class MyRadio {
         o.id == id &&
         o.order == order &&
         o.name == name &&
-        o.tagline == tagline &&
-        o.color == color &&
+        o.greencolor == greencolor &&
+        o.redcolor == redcolor&&
         o.desc == desc &&
         o.url == url &&
         o.category == category &&
@@ -166,8 +166,8 @@ class MyRadio {
     return id.hashCode ^
         order.hashCode ^
         name.hashCode ^
-        tagline.hashCode ^
-        color.hashCode ^
+        greencolor.hashCode ^
+        redcolor.hashCode ^
         desc.hashCode ^
         url.hashCode ^
         category.hashCode ^

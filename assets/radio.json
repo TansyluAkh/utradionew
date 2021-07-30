@@ -1,47 +1,47 @@
 {
-    "radios": [
-        {
-               "id": 1,
-               "name": "",
-               "tagline": "",
-               "color": "0xffe1bee7",
-               "desc": "Tatar Vinyl music",
-               "url": "https://ilgamsharipov.radioca.st/stream",
-               "icon": "https://urban.tatar/titulimg/viban.png",
-               "image": "https://urban.tatar/titulimg/viban.png",
-               "lang": "TATAR",
-               "category": "Vinyl",
-               "disliked": false,
-               "order": 1
-           },
-        {
-        "id": 2,
-        "name": "",
-        "tagline": "",
-        "color": "0xffa11431",
-        "desc": "Tatar alternative music",
-        "url": "https://urbantatarold.radioca.st/stream",
-        "icon": "https://urban.tatar/titulimg/alban.png",
-        "image": "https://urban.tatar/titulimg/alban.png",
-        "lang": "TATAR",
-        "category": "Alternative",
-        "disliked": false,
-        "order": 2
-        },
-      {
-        "id": 3,
-        "name": "",
-        "tagline": "",
-        "color": "0xffbf360c",
-        "desc": "Tatar progressive music",
-        "url": "https://urbantatar.radioca.st/stream",
-        "icon": "https://urban.tatar/titulimg/prban.png",
-        "image": "https://urban.tatar/titulimg/prban.png",
-        "lang": "TATAR",
-        "category": "Progressive",
-        "disliked": false,
-        "order": 3
-      }
-    ]
-   
+  "radios": [
+    {
+      "id": 1,
+      "name": "",
+      "greencolor": "0xff82BB92",
+      "redcolor": "0xffE2432D",
+      "desc": "Tatar Vinyl music",
+      "url": "https://ilgamsharipov.radioca.st/stream",
+      "icon": "https://urban.tatar/titulimg/viban.png",
+      "image": "https://urban.tatar/titulimg/viban.png",
+      "lang": "TATAR",
+      "category": "Vinyl",
+      "disliked": false,
+      "order": 1
+    },
+    {
+      "id": 2,
+      "name": "",
+      "greencolor": "0xff82BB92",
+      "redcolor": "0xffE2432D",
+      "desc": "Tatar alternative music",
+      "url": "https://urbantatarold.radioca.st/stream",
+      "icon": "https://urban.tatar/titulimg/alban.png",
+      "image": "https://urban.tatar/titulimg/alban.png",
+      "lang": "TATAR",
+      "category": "Alternative",
+      "disliked": false,
+      "order": 2
+    },
+    {
+      "id": 3,
+      "name": "",
+      "greencolor": "0xff82BB92",
+      "redcolor": "0xffE2432D",
+      "desc": "Tatar progressive music",
+      "url": "https://urbantatar.radioca.st/stream",
+      "icon": "https://urban.tatar/titulimg/prban.png",
+      "image": "https://urban.tatar/titulimg/prban.png",
+      "lang": "TATAR",
+      "category": "Progressive",
+      "disliked": false,
+      "order": 3
+    }
+  ]
+
 }
