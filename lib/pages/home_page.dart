@@ -1,6 +1,8 @@
 import '/model/radio.dart';
 import 'package:radio_player/radio_player.dart';
 import '/pages/loading.dart';
+import '/pages/colors.dart';
+import 'package:buttons_tabbar/buttons_tabbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -54,9 +56,7 @@ class _HomePageState extends State<HomePage> {
 
   fetchRadios() async {
     final radioJson = await rootBundle.loadString("assets/radio.json");
-    radios = MyRadioList
-        .fromJson(radioJson)
-        .radios;
+    radios = MyRadioList.fromJson(radioJson).radios;
     _selectedRadio = radios![0];
     print(radios);
     setState(() {});
@@ -100,12 +100,12 @@ class _HomePageState extends State<HomePage> {
         songs
             .doc(docId)
             .set({
-          'Artist': _info, // John Doe
-          'Type': type, // Stokes and Sons
-          'Title': _info1, // 42
-          'Likes': 0,
-          'Streams': 1,
-        })
+              'Artist': _info, // John Doe
+              'Type': type, // Stokes and Sons
+              'Title': _info1, // 42
+              'Likes': 0,
+              'Streams': 1,
+            })
             .then((value) => print("User Added"))
             .catchError((error) => print("Failed to add user: $error"));
       }
@@ -125,8 +125,8 @@ class _HomePageState extends State<HomePage> {
       return songs
           .doc(_info1)
           .update(<String, dynamic>{
-        'Likes': FieldValue.increment(1),
-      })
+            'Likes': FieldValue.increment(1),
+          })
           .then((value) => print("Song info Added"))
           .catchError((error) => print("Failed to add song info: $error"));
     } else {
@@ -137,114 +137,120 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery
-        .of(context)
-        .size
-        .width;
-    double height = MediaQuery
-        .of(context)
-        .size
-        .height;
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     BlobController blobCtrl = BlobController();
     return Scaffold(
         body: Column(children: [
-            Align(
-            alignment: Alignment.topCenter,
-            child: Padding(
-                padding: EdgeInsets.only(top: height * 0.1),
-                child: Text('URBANTATAR',
+      Align(
+          alignment: Alignment.topCenter,
+          child: Padding(
+              padding: EdgeInsets.only(top: height * 0.1),
+              child: Text('URBANTATAR',
+                  style: const TextStyle(
+                    fontSize: 20,
+                  )).shimmer(primaryColor: red, secondaryColor: green))),
+
+      ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: height * 0.1),
+          child: VxSwiper.builder(
+            itemCount: 2,
+            height: height * 0.1,
+            viewportFraction: 1.0,
+            autoPlay: true,
+            autoPlayAnimationDuration: 5.seconds,
+            autoPlayCurve: Curves.linear,
+            enableInfiniteScroll: true,
+            itemBuilder: (context, index) {
+              final s = [_info, _info1][index];
+              return Chip(
+                autofocus: true,
+                label: Text(s,
                     style: const TextStyle(
                       fontSize: 20,
-                    ))
-                    .shimmer(
-                    primaryColor: Color(0xff9CA97B),
-                    secondaryColor: Color(0xffE2432D)))),
-          ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: height*0.1),
-            child:
-            VxSwiper.builder(
-              itemCount: 2,
-              height: height * 0.1,
-              viewportFraction: 1.0,
-              autoPlay: true,
-              autoPlayAnimationDuration: 5.seconds,
-              autoPlayCurve: Curves.linear,
-              enableInfiniteScroll: true,
-              itemBuilder: (context, index) {
-                final s = [_info, _info1][index];
-                return Chip(
-                  autofocus: true,
-                  label: Text(s,
-                      style: const TextStyle(
-                        fontSize: 20,
-                      )),
-                  backgroundColor: Colors.transparent,
-                );
+                    )),
+                backgroundColor: Colors.transparent,
+              );
+            },
+          )),
+      radios != null
+          ? VxSwiper.builder(
+              height: width * 0.9,
+              itemCount: radios!.length,
+              aspectRatio: 1.0,
+              enlargeCenterPage: true,
+              onPageChanged: (index) {
+                blobCtrl.change();
+                _selectedRadio = radios![index];
+                _audioPlayer.pause();
+                _playMusic(_selectedRadio!.url);
+                songs.doc(_info1).update(<String, dynamic>{
+                  'Streams': FieldValue.increment(1),
+                });
+                getInfo();
+                getLikes(_info1);
+                setState(() {});
               },
-            )),
-            radios != null
-                ? VxSwiper.builder(
-                height: width,
-                itemCount: radios!.length,
-                aspectRatio: 1.0,
-                enlargeCenterPage: true,
-                onPageChanged: (index) {
-                  blobCtrl.change();
-                  _selectedRadio = radios![index];
-                  _audioPlayer.pause();
-                  _playMusic(_selectedRadio!.url);
-                  songs.doc(_info1).update(<String, dynamic>{
-                    'Streams': FieldValue.increment(1),
-                  });
-                  getInfo();
-                  getLikes(_info1);
-                  setState(() {});
-                },
-                itemBuilder: (context, index) {
-                  final rad = radios![index];
-                  return
-                    ClipPage(url: rad.image,
-                        width: width * 0.9,
-                        height: width,
-                        redcolor: Color(int.parse(rad.redcolor)),
-                        greencolor: Color(int.parse(rad.greencolor)));
-                })
-                : Center(
+              itemBuilder: (context, index) {
+                final rad = radios![index];
+                return ClipPage(
+                    url: rad.image,
+                    width: width * 0.9,
+                    height: width * 0.9,
+                    redcolor: Color(int.parse(rad.redcolor)),
+                    greencolor: Color(int.parse(rad.greencolor)));
+              })
+          : Center(
               child: CircularProgressIndicator(
                 backgroundColor: Colors.white,
               ),
             ),
-            Blob.animatedRandom(
-              styles: BlobStyles(
-                color: Colors.green,
-                fillType: BlobFillType.fill,
-                gradient: LinearGradient(
-                    colors: _isPlaying
-                    ? [Colors.redAccent, Colors.green]
-                    : [Colors.white, Colors.grey])
-                    .createShader(Rect.fromLTRB(0, 0, 300, 300)),
-                strokeWidth: 3,
-              ),
-              loop: true,
-              size: height * 0.1,
-              edgesCount: 6,
-              minGrowth: 7,
-              controller: blobCtrl,
-              child: Icon(
-                _isPlaying
-                    ? CupertinoIcons.pause_fill
-                    : CupertinoIcons.play_arrow_solid,
-                size: height * 0.07,
-              ).onInkTap(() {
-                if (_isPlaying) {
-                  _audioPlayer.pause();
-                } else {
-                  _playMusic(_selectedRadio!.url);
-                }
-              }),
-            ),
-            ])
-    );
+      Blob.animatedRandom(
+        styles: BlobStyles(
+          color: Colors.green,
+          fillType: BlobFillType.fill,
+          gradient: LinearGradient(
+                  colors: _isPlaying
+                      ? [Colors.redAccent, Colors.green]
+                      : [Colors.white, Colors.grey])
+              .createShader(Rect.fromLTRB(0, 0, 300, 300)),
+          strokeWidth: 3,
+        ),
+        loop: true,
+        size: height * 0.1,
+        edgesCount: 6,
+        minGrowth: 7,
+        controller: blobCtrl,
+        child: Icon(
+          _isPlaying
+              ? CupertinoIcons.pause_fill
+              : CupertinoIcons.play_arrow_solid,
+          size: height * 0.07,
+        ).onInkTap(() {
+          if (_isPlaying) {
+            _audioPlayer.pause();
+          } else {
+            _playMusic(_selectedRadio!.url);
+          }
+        }),
+      ),
+      // Row(
+      //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //   mainAxisSize: MainAxisSize.max,
+      //   children: [
+      //     IconButton(
+      //       onPressed: navigateToPage,
+      //       icon: Image.network('https://s6.gifyu.com/images/utkids.png'),
+      //       iconSize: height*0.05,
+      //     ),
+      //     IconButton(
+      //         onPressed: navigateToPage,
+      //         iconSize: height*0.05,
+      //         icon: Image.network('https://s6.gifyu.com/images/utpodcast.png')
+      //     ),
+      //   ],
+      // )
+    ]));
   }
 
   void getInfo() {
@@ -262,5 +268,12 @@ class _HomePageState extends State<HomePage> {
       }
     });
     return;
+  }
+
+  void navigateToPage() {
+    //   Navigator.push(
+    //       context,
+    //       MaterialPageRoute(
+    //       builder: (context) => ()));
   }
 }

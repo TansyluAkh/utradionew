@@ -29,7 +29,7 @@ class ClipPage extends StatefulWidget {
               // color: Colors.red,
               width: widget.width*0.9,
               child: ClipPath(
-                clipper: BlobClipper(id: '9-7-3291'),
+                clipper: BlobClipper(id: '20-6-416'),
                 child: Image.network(
                   widget.url, alignment: Alignment.center,
                   height: widget.height*0.9, width: widget.width, fit: BoxFit.fill,
