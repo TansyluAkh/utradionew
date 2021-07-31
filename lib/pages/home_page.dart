@@ -250,6 +250,7 @@ class _HomePageState extends State<HomePage> {
   void getInfo() {
     setState(() {
       print(metadata);
+      //
       if (metadata?[1] != null) {
         _info = metadata?[1] ?? 'x';
       }
