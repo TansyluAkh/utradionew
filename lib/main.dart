@@ -85,6 +85,7 @@ class _SplashAppState extends State<SplashApp> {
   Widget _buildBody() {
     if (_hasError) {
       return Center(
+        // ignore: deprecated_member_use
         child: RaisedButton(
           child: Text('retry'),
           onPressed: () => main(),

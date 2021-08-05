@@ -1,32 +1,38 @@
 import '/model/radio.dart';
 import 'package:radio_player/radio_player.dart';
 import '/pages/loading.dart';
+import '/pages/podcastslibrary.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/pages/colors.dart';
-import 'package:buttons_tabbar/buttons_tabbar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' hide Blob;
 import 'package:blobs/blobs.dart';
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
+
 class _HomePageState extends State<HomePage> {
+  bool isplaying = false;
+  bool _ispressed = false;
   String _likedsong = 'start';
   RadioPlayer _audioPlayer = RadioPlayer();
   List<MyRadio>? radios;
   MyRadio? _selectedRadio;
-  bool _isPlaying = false;
-  bool _ispressed = false;
   List<String>? metadata;
   String _info0 = 'empty';
   String _info = ' ';
   String _info1 = ' ';
   String _doc = '0';
+
+  int _page = 0;
+
+  var _bottomNavIndex = 0;
 
   @override
   void initState() {
@@ -36,9 +42,11 @@ class _HomePageState extends State<HomePage> {
   }
 
   void initRadioPlayer() {
+    _audioPlayer.setMediaItem('first', 'https://ilgamsharipov.radioca.st/stream');
+    _audioPlayer.play();
     _audioPlayer.stateStream.listen((value) {
       setState(() {
-        _isPlaying = value;
+        isplaying = value;
       });
     });
     _audioPlayer.metadataStream.listen((value) {
@@ -56,7 +64,9 @@ class _HomePageState extends State<HomePage> {
 
   fetchRadios() async {
     final radioJson = await rootBundle.loadString("assets/radio.json");
-    radios = MyRadioList.fromJson(radioJson).radios;
+    radios = MyRadioList
+        .fromJson(radioJson)
+        .radios;
     _selectedRadio = radios![0];
     print(radios);
     setState(() {});
@@ -76,9 +86,9 @@ class _HomePageState extends State<HomePage> {
 
   IconData check() {
     if (_likedsong != _info1) {
-      return CupertinoIcons.suit_heart;
+      return FontAwesomeIcons.heart;
     } else {
-      return CupertinoIcons.suit_heart_fill;
+      return FontAwesomeIcons.heart;
     }
   }
 
@@ -100,12 +110,12 @@ class _HomePageState extends State<HomePage> {
         songs
             .doc(docId)
             .set({
-              'Artist': _info, // John Doe
-              'Type': type, // Stokes and Sons
-              'Title': _info1, // 42
-              'Likes': 0,
-              'Streams': 1,
-            })
+          'Artist': _info, // John Doe
+          'Type': type, // Stokes and Sons
+          'Title': _info1, // 42
+          'Likes': 0,
+          'Streams': 1,
+        })
             .then((value) => print("User Added"))
             .catchError((error) => print("Failed to add user: $error"));
       }
@@ -125,8 +135,8 @@ class _HomePageState extends State<HomePage> {
       return songs
           .doc(_info1)
           .update(<String, dynamic>{
-            'Likes': FieldValue.increment(1),
-          })
+        'Likes': FieldValue.increment(1),
+      })
           .then((value) => print("Song info Added"))
           .catchError((error) => print("Failed to add song info: $error"));
     } else {
@@ -137,44 +147,61 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    double width = MediaQuery
+        .of(context)
+        .size
+        .width;
+    double height = MediaQuery
+        .of(context)
+        .size
+        .height;
     BlobController blobCtrl = BlobController();
     return Scaffold(
-        body: Column(children: [
-      Align(
-          alignment: Alignment.topCenter,
-          child: Padding(
-              padding: EdgeInsets.only(top: height * 0.1),
-              child: Text('URBANTATAR',
-                  style: const TextStyle(
-                    fontSize: 20,
-                  )).shimmer(primaryColor: red, secondaryColor: green))),
+        appBar: AppBar(
 
-      ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: height * 0.1),
-          child: VxSwiper.builder(
-            itemCount: 2,
-            height: height * 0.1,
-            viewportFraction: 1.0,
-            autoPlay: true,
-            autoPlayAnimationDuration: 5.seconds,
-            autoPlayCurve: Curves.linear,
-            enableInfiniteScroll: true,
-            itemBuilder: (context, index) {
-              final s = [_info, _info1][index];
-              return Chip(
-                autofocus: true,
-                label: Text(s,
-                    style: const TextStyle(
-                      fontSize: 20,
-                    )),
-                backgroundColor: Colors.transparent,
-              );
-            },
-          )),
-      radios != null
-          ? VxSwiper.builder(
+          title: Text('URBANTATAR',
+              style: const TextStyle(
+                fontSize: 20,
+              )).shimmer(primaryColor: red, secondaryColor: green),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+          ),
+          backgroundColor: Colors.transparent,
+          // Colors.white.withOpacity(0.1),
+          elevation: 0,
+        ),
+        body: Stack(children: [
+          SizedBox(
+            height: height*0.1,
+            width: width,
+          ),
+          ConstrainedBox(
+              constraints: BoxConstraints(maxHeight: height * 0.1),
+              child: VxSwiper.builder(
+                itemCount: 2,
+                height: height * 0.1,
+                viewportFraction: 1.0,
+                autoPlay: true,
+                autoPlayAnimationDuration: 5.seconds,
+                autoPlayCurve: Curves.linear,
+                enableInfiniteScroll: true,
+                itemBuilder: (context, index) {
+                  final s = [_info, _info1][index];
+                  return Chip(
+                    autofocus: true,
+                    label: Text(s,
+                        style: const TextStyle(
+                          fontSize: 20,
+                        )),
+                    backgroundColor: Colors.transparent,
+                  );
+                },
+              )),
+          Align(
+          alignment: Alignment.center,
+          child:
+          radios != null
+              ? VxSwiper.builder(
               height: width * 0.9,
               itemCount: radios!.length,
               aspectRatio: 1.0,
@@ -200,57 +227,56 @@ class _HomePageState extends State<HomePage> {
                     redcolor: Color(int.parse(rad.redcolor)),
                     greencolor: Color(int.parse(rad.greencolor)));
               })
-          : Center(
-              child: CircularProgressIndicator(
+              : Center(
+            child: CircularProgressIndicator(
                 backgroundColor: Colors.white,
-              ),
+              color: Color(0xFF474747),
             ),
-      Blob.animatedRandom(
-        styles: BlobStyles(
-          color: Colors.green,
-          fillType: BlobFillType.fill,
-          gradient: LinearGradient(
-                  colors: _isPlaying
-                      ? [Colors.redAccent, Colors.green]
-                      : [Colors.white, Colors.grey])
-              .createShader(Rect.fromLTRB(0, 0, 300, 300)),
-          strokeWidth: 3,
-        ),
-        loop: true,
-        size: height * 0.1,
-        edgesCount: 6,
-        minGrowth: 7,
-        controller: blobCtrl,
-        child: Icon(
-          _isPlaying
-              ? CupertinoIcons.pause_fill
-              : CupertinoIcons.play_arrow_solid,
-          size: height * 0.07,
-        ).onInkTap(() {
-          if (_isPlaying) {
-            _audioPlayer.pause();
-          } else {
-            _playMusic(_selectedRadio!.url);
-          }
-        }),
-      ),
-      // Row(
-      //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      //   mainAxisSize: MainAxisSize.max,
-      //   children: [
-      //     IconButton(
-      //       onPressed: navigateToPage,
-      //       icon: Image.network('https://s6.gifyu.com/images/utkids.png'),
-      //       iconSize: height*0.05,
-      //     ),
-      //     IconButton(
-      //         onPressed: navigateToPage,
-      //         iconSize: height*0.05,
-      //         icon: Image.network('https://s6.gifyu.com/images/utpodcast.png')
-      //     ),
-      //   ],
-      // )
-    ]));
+          ),
+          )]),
+        floatingActionButton:
+        FloatingActionButton(
+          mini:true,
+          foregroundColor: Colors.black,
+          backgroundColor: Colors.transparent,
+            elevation: 0,
+            onPressed: () { print('gg'); },
+            child:
+            Icon(isplaying
+                  ? FontAwesomeIcons.pause
+                  : FontAwesomeIcons.play,
+                size: height * 0.05,
+              ).onInkTap(() {
+                if (isplaying) {
+                  _audioPlayer.pause();
+                } else {
+                  if (_selectedRadio != null) {
+                    _playMusic(_selectedRadio!.url);
+                  }
+                }}),
+              ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar:
+        AnimatedBottomNavigationBar(
+          icons:
+          [FontAwesomeIcons.microphone,
+            FontAwesomeIcons.child],
+          activeIndex: _bottomNavIndex,
+          gapLocation: GapLocation.center,
+          notchSmoothness: NotchSmoothness.verySmoothEdge,
+          leftCornerRadius: 32,
+          rightCornerRadius: 32,
+          onTap: (index){
+            setState(() {
+              _bottomNavIndex = index;
+            });
+            navigateToPage(_bottomNavIndex);
+          },
+
+        )
+
+
+    );
   }
 
   void getInfo() {
@@ -258,22 +284,23 @@ class _HomePageState extends State<HomePage> {
       print(metadata);
       //
       if (metadata?[1] != null) {
-        _info = metadata?[1] ?? 'x';
+        _info = metadata?[1].split("[")[0] ?? 'x';
       }
       if (metadata?[0] != null) {
-        _info0 = metadata?[0] ?? 'x';
+        _info0 = metadata?[0].split("[")[0] ?? 'x';
       }
       if (metadata?[2] != null) {
-        _info1 = metadata?[2] ?? 'x';
+        _info1 = metadata?[2].split("[")[0] ?? 'x';
       }
     });
     return;
   }
 
-  void navigateToPage() {
-    //   Navigator.push(
-    //       context,
-    //       MaterialPageRoute(
-    //       builder: (context) => ()));
+  void navigateToPage(index) {
+    if (isplaying){
+      _audioPlayer.pause();}
+    if (index == 0){
+      Navigator.push(context,
+      MaterialPageRoute(builder: (context) => Library()));}
   }
 }

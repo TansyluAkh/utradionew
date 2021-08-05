@@ -7,7 +7,7 @@ class ClipPage extends StatefulWidget {
   final url;
   final greencolor;
   final redcolor;
-  const ClipPage({Key? key,  this.redcolor, this.greencolor, this.width, this.height, this.url}) : super(key: key);
+  const ClipPage({Key? key, this.redcolor, this.greencolor, this.width, this.height, this.url}) : super(key: key);
   @override
   _ClipPageState createState() => _ClipPageState();
 }
@@ -39,6 +39,18 @@ class ClipPage extends StatefulWidget {
           ],);
 
   }
-
-
 }
+Widget buildrandom(BuildContext context, icon, height){
+  return  Blob.random(
+      styles: BlobStyles(
+      color: Colors.white,
+      fillType: BlobFillType.fill,
+      gradient: LinearGradient(
+      colors: [Color(0xFF507251), Colors.white])
+      .createShader(Rect.fromLTRB(0, 0, 300, 300)),
+  strokeWidth: 3,
+  ),
+  size: height * 0.08,
+  edgesCount: 6,
+  minGrowth: 7,
+  child: icon);}
