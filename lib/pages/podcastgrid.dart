@@ -32,7 +32,7 @@ class CardGrid extends StatelessWidget {
     Image.network(image,fit: BoxFit.fitHeight, alignment: Alignment.bottomLeft,),
           Padding(padding: EdgeInsets.symmetric(horizontal: 10.0)),
           Expanded(
-              child: Text('Hey this is my long text appbar title')
+              child: Text(series)
           )]
     ),
     ),
