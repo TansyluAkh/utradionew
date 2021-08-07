@@ -4,26 +4,26 @@ import '/model/song.dart';
 
 class RecommendedCard extends StatelessWidget {
   final Podcast podcast;
-  RecommendedCard({required this.podcast});
+  final height;
+  final width;
+  RecommendedCard({required this.podcast, this.width, this.height});
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 200.0,
+      width: width*0.3,
       margin: EdgeInsets.only(right: 18.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Material(
-            elevation: 8.0,
-            shadowColor: black,
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25.0),
+              borderRadius: BorderRadius.circular(5.0),
             ),
             child: Container(
-              width: 200.0,
-              height: 200.0,
+              width: width*0.3,
+              height: width*0.3,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(25.0),
+                borderRadius: BorderRadius.circular(5),
                 image: DecorationImage(
                   image: NetworkImage(podcast.image),
                   fit: BoxFit.cover,

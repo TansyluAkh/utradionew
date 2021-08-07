@@ -1,10 +1,30 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:ut_radio/pages/podcastgrid.dart';
 class Podcast {
   final String title;
   final String artist;
   final String image;
-  final String genre;
+  final String date;
   final String audio;
-  Podcast({required this.audio, required this.title, required this.artist, required this.image, required this.genre});
+  Podcast({required this.audio, required this.title, required this.artist, required this.image, required this.date});
+}
+
+
+Future<List<CardGrid>> getData() async {
+  CollectionReference podcasts = FirebaseFirestore.instance.collection('podcasts');
+  List<CardGrid> arr = [];
+  QuerySnapshot querySnapshot = await podcasts.get();
+  final allData = querySnapshot.docs.forEach((element) {
+    Map<String, dynamic>? data = element.data() as Map<String, dynamic>?;
+    var value = data!['image'].toString();
+    arr.add(CardGrid(audio:data['audio'].toString(),
+        description: data['description'].toString(),
+        title: data['episode'].toString(),
+        image: data['image'].toString(),
+        date: data['date'].toString(), series: data['name'].toString(),));
+    print(value);});
+  return arr;
 }
 
 List<Podcast> recommendedList = [
@@ -13,63 +33,29 @@ List<Podcast> recommendedList = [
       title: "The Comedy Podcast",
       artist: "Jessica Veranda",
       image: "https://s6.gifyu.com/images/poiE7KBZYuM.jpg",
-      genre: "Comedy"),
+      date: "Comedy"),
   Podcast(
     audio: "https://urban.tatar/podcast/kazan_kayniy/kazan_kayniy_36.mp3",
       title: "Try your lucky for your life",
       artist: "Andrea jhon",
       image: "https://s6.gifyu.com/images/poiE7KBZYuM.jpg",
-      genre: "Business"),
+      date: "Business"),
   Podcast(
     audio: "https://urban.tatar/podcast/kazan_kayniy/kazan_kayniy_36.mp3",
       title: "Tips and Trick how to be a UI/UX Designer",
       artist: "Dicky Reynaldi",
       image: "https://s6.gifyu.com/images/poiE7KBZYuM.jpg",
-      genre: "Designer"),
+      date: "Designer"),
   Podcast(
     audio: "https://urban.tatar/podcast/kazan_kayniy/kazan_kayniy_36.mp3",
       title: "Just be nice for you life and keep going up",
       artist: "Dedy Corbuzier",
       image: "https://s6.gifyu.com/images/poiE7KBZYuM.jpg",
-      genre: "Story"),
+      date: "Story"),
   Podcast(
     audio: "https://urban.tatar/podcast/kazan_kayniy/kazan_kayniy_36.mp3",
       title: "Heal your mind",
       artist: "Gilang W.P",
       image: "https://s6.gifyu.com/images/poiE7KBZYuM.jpg",
-      genre: "Psycholgy"),
-];
-
-List<Podcast> latestList = [
-  Podcast(
-    audio: "https://urban.tatar/podcast/kazan_kayniy/kazan_kayniy_36.mp3",
-      title: "You need some color for interact your users",
-      artist: "Doddy J",
-      image: "https://s6.gifyu.com/images/poiE7KBZYuM.jpg",
-      genre: "Designer"),
-  Podcast(
-    audio: "https://urban.tatar/podcast/kazan_kayniy/kazan_kayniy_36.mp3",
-      title: "What motorcycle can i buy with \$1000",
-      artist: "Krisdianto S",
-      image: "https://s6.gifyu.com/images/poiE7KBZYuM.jpg",
-      genre: "Shop"),
-  Podcast(
-    audio: "https://urban.tatar/podcast/kazan_kayniy/kazan_kayniy_36.mp3",
-      title: "Hear us to improve your skill",
-      artist: "Angga Rizky",
-      image: "https://s6.gifyu.com/images/poiE7KBZYuM.jpg",
-      genre: "Designer"),
-  Podcast(
-    audio: "https://urban.tatar/podcast/kazan_kayniy/kazan_kayniy_36.mp3",
-      title: "Your UI need some special design",
-      artist: "Debbie Milman",
-      image: "https://s6.gifyu.com/images/poiE7KBZYuM.jpg",
-      genre: "Designer"),
-  Podcast(
-    audio: "https://urban.tatar/podcast/kazan_kayniy/kazan_kayniy_36.mp3",
-    title: "Grow up you career!!",
-    artist: "Jilbit S",
-    image: "https://s6.gifyu.com/images/poiE7KBZYuM.jpg",
-    genre: "Business",
-  ),
+      date: "Psycholgy"),
 ];
