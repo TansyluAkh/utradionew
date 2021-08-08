@@ -1,23 +1,22 @@
 import 'dart:async';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:audioplayers/notifications.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class PlayerWidget extends StatefulWidget {
-  final String url;
+  final episodeItem;
   final PlayerMode mode;
 
   const PlayerWidget({
     Key? key,
-    required this.url,
+    required this.episodeItem,
     this.mode = PlayerMode.MEDIA_PLAYER,
   }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _PlayerWidgetState(url, mode);
+    return _PlayerWidgetState(episodeItem, mode);
   }
 }
 
@@ -69,7 +68,21 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Scaffold(
+        appBar: AppBar(
+
+          title: Text('URBANTATAR',
+              style: const TextStyle(
+                fontSize: 20,
+              )),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+          ),
+          backgroundColor: Colors.transparent,
+          // Colors.white.withOpacity(0.1),
+          elevation: 0,
+        ),
+        body: Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Row(
@@ -146,7 +159,7 @@ class _PlayerWidgetState extends State<PlayerWidget> {
         ),
         Text('State: $_audioPlayerState'),
       ],
-    );
+    ));
   }
 
   void _initAudioPlayer() {
@@ -161,12 +174,12 @@ class _PlayerWidgetState extends State<PlayerWidget> {
 
         // set at least title to see the notification bar on ios.
         _audioPlayer.notificationService.setNotification(
-          title: 'App Name',
-          artist: 'Artist or blank',
-          albumTitle: 'Name or blank',
-          imageUrl: 'Image URL or blank',
-          forwardSkipInterval: const Duration(seconds: 30), // default is 30s
-          backwardSkipInterval: const Duration(seconds: 30), // default is 30s
+          title: widget.episodeItem.episodenum,
+          artist: widget.episodeItem.episode,
+          albumTitle: '',
+          imageUrl: widget.episodeItem.image,
+          forwardSkipInterval: const Duration(seconds: 15), // default is 30s
+          backwardSkipInterval: const Duration(seconds: 15), // default is 30s
           duration: duration,
           enableNextTrackButton: true,
           enablePreviousTrackButton: true,
@@ -229,10 +242,6 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     if (result == 1) {
       setState(() => _playerState = PlayerState.PLAYING);
     }
-
-    // default playback rate is 1.0
-    // this should be called after _audioPlayer.play() or _audioPlayer.resume()
-    // this can also be called everytime the user wants to change playback rate in the UI
     _audioPlayer.setPlaybackRate();
 
     return result;
@@ -246,13 +255,6 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     return result;
   }
 
-  Future<int> _earpieceOrSpeakersToggle() async {
-    final result = await _audioPlayer.earpieceOrSpeakersToggle();
-    if (result == 1) {
-      setState(() => _playingRouteState = _playingRouteState.toggle());
-    }
-    return result;
-  }
 
   Future<int> _stop() async {
     final result = await _audioPlayer.stop();
@@ -269,4 +271,3 @@ class _PlayerWidgetState extends State<PlayerWidget> {
     setState(() => _playerState = PlayerState.STOPPED);
   }
 }
-© 2021 GitHub, Inc.
