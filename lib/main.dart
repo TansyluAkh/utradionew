@@ -1,8 +1,9 @@
 import 'package:ut_radio/pages/constants.dart';
-
-import 'pages/playerfunc.dart';
+import 'package:ut_radio/pages/home_page.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:ut_radio/pages/playerfunc.dart';
 
 void main() {
   runApp(
@@ -24,17 +25,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: '',
       theme: ThemeData(fontFamily: "Montserrat"),
       debugShowCheckedModeBanner: false,
-      home: PlayerWidget(url: 'https://urban.tatar/podcast/kazan_kayniy/kazan_kayniy_1.mp3',),
+      home: HomePage(),
     );
   }
 }
 
 class SplashApp extends StatefulWidget {
   final VoidCallback onInitializationComplete;
-
   const SplashApp({
     required Key key,
     required this.onInitializationComplete,
@@ -61,6 +60,11 @@ class _SplashAppState extends State<SplashApp> {
     try {
       // Wait for Firebase to initialize and set `_initialized` state to true
       await Firebase.initializeApp();
+      await JustAudioBackground.init(
+        androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+        androidNotificationChannelName: 'Audio playback',
+        androidNotificationOngoing: true,
+      );
       setState(() {
         _initialized = true;
         print('INITIALIZED');
@@ -76,7 +80,7 @@ class _SplashAppState extends State<SplashApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Splash Screen',
+      title: '',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),

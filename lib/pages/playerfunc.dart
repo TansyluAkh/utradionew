@@ -1,273 +1,238 @@
-import 'dart:async';
-import 'package:audioplayers/audioplayers.dart';
-import 'package:audioplayers/notifications.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:just_audio_background/just_audio_background.dart';
+import 'common.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:velocity_x/velocity_x.dart';
+import 'package:ut_radio/pages/constants.dart';
 
-class PlayerWidget extends StatefulWidget {
+class MyPlayer extends StatefulWidget {
   final episodeItem;
-  final PlayerMode mode;
-
-  const PlayerWidget({
-    Key? key,
-    required this.episodeItem,
-    this.mode = PlayerMode.MEDIA_PLAYER,
-  }) : super(key: key);
-
+  final playInfo;
+  const MyPlayer( {Key? key, this.playInfo, this.episodeItem}) : super(key: key);
   @override
-  State<StatefulWidget> createState() {
-    return _PlayerWidgetState(episodeItem, mode);
-  }
+  _MyPlayerState createState() => _MyPlayerState();
 }
 
-class _PlayerWidgetState extends State<PlayerWidget> {
-  String url;
-  PlayerMode mode;
-
-  late AudioPlayer _audioPlayer;
-  PlayerState? _audioPlayerState;
-  Duration? _duration;
-  Duration? _position;
-
-  PlayerState _playerState = PlayerState.STOPPED;
-  PlayingRoute _playingRouteState = PlayingRoute.SPEAKERS;
-  StreamSubscription? _durationSubscription;
-  StreamSubscription? _positionSubscription;
-  StreamSubscription? _playerCompleteSubscription;
-  StreamSubscription? _playerErrorSubscription;
-  StreamSubscription? _playerStateSubscription;
-  StreamSubscription<PlayerControlCommand>? _playerControlCommandSubscription;
-
-  bool get _isPlaying => _playerState == PlayerState.PLAYING;
-  bool get _isPaused => _playerState == PlayerState.PAUSED;
-  String get _durationText => _duration?.toString().split('.').first ?? '';
-  String get _positionText => _position?.toString().split('.').first ?? '';
-
-  bool get _isPlayingThroughEarpiece =>
-      _playingRouteState == PlayingRoute.EARPIECE;
-
-  _PlayerWidgetState(this.url, this.mode);
+class _MyPlayerState extends State<MyPlayer> {
+  late AudioPlayer _player;
+  late ConcatenatingAudioSource _playlist;
+  int _addedCount = 0;
 
   @override
   void initState() {
     super.initState();
-    _initAudioPlayer();
+    _player = AudioPlayer();
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Colors.black,
+    ));
+    _playlist = ConcatenatingAudioSource(children: widget.playInfo);
+    _init();
+  }
+
+  Future<void> _init() async {
+
+    final session = await AudioSession.instance;
+    await session.configure(AudioSessionConfiguration.speech());
+    // Listen to errors during playback.
+    _player.playbackEventStream.listen((event) {},
+        onError: (Object e, StackTrace stackTrace) {
+          print('A stream error occurred: $e');
+        });
+    try {
+      await _player.setAudioSource(_playlist);
+    } catch (e, stackTrace) {
+      // Catch load errors: 404, invalid url ...
+      print("Error loading playlist: $e");
+      print(stackTrace);
+    }
   }
 
   @override
   void dispose() {
-    _audioPlayer.dispose();
-    _durationSubscription?.cancel();
-    _positionSubscription?.cancel();
-    _playerCompleteSubscription?.cancel();
-    _playerErrorSubscription?.cancel();
-    _playerStateSubscription?.cancel();
-    _playerControlCommandSubscription?.cancel();
+    _player.dispose();
     super.dispose();
   }
 
+  Stream<PositionData> get _positionDataStream =>
+      Rx.combineLatest3<Duration, Duration, Duration?, PositionData>(
+          _player.positionStream,
+          _player.bufferedPositionStream,
+          _player.durationStream,
+              (position, bufferedPosition, duration) => PositionData(
+              position, bufferedPosition, duration ?? Duration.zero));
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         appBar: AppBar(
-
-          title: Text('URBANTATAR',
-              style: const TextStyle(
-                fontSize: 20,
-              )),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
-          ),
-          backgroundColor: Colors.transparent,
-          // Colors.white.withOpacity(0.1),
-          elevation: 0,
-        ),
-        body: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              key: const Key('play_button'),
-              onPressed: _isPlaying ? null : _play,
-              iconSize: 64.0,
-              icon: const Icon(Icons.play_arrow),
-              color: Colors.cyan,
-            ),
-            IconButton(
-              key: const Key('pause_button'),
-              onPressed: _isPlaying ? _pause : null,
-              iconSize: 64.0,
-              icon: const Icon(Icons.pause),
-              color: Colors.cyan,
-            ),
-            IconButton(
-              key: const Key('stop_button'),
-              onPressed: _isPlaying || _isPaused ? _stop : null,
-              iconSize: 64.0,
-              icon: const Icon(Icons.stop),
-              color: Colors.cyan,
-            ),
-            IconButton(
-              onPressed: _earpieceOrSpeakersToggle,
-              iconSize: 64.0,
-              icon: _isPlayingThroughEarpiece
-                  ? const Icon(Icons.volume_up)
-                  : const Icon(Icons.hearing),
-              color: Colors.cyan,
-            ),
-          ],
-        ),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Stack(
-                children: [
-                  Slider(
-                    onChanged: (v) {
-                      final duration = _duration;
-                      if (duration == null) {
-                        return;
-                      }
-                      final Position = v * duration.inMilliseconds;
-                      _audioPlayer
-                          .seek(Duration(milliseconds: Position.round()));
-                    },
-                    value: (_position != null &&
-                        _duration != null &&
-                        _position!.inMilliseconds > 0 &&
-                        _position!.inMilliseconds <
-                            _duration!.inMilliseconds)
-                        ? _position!.inMilliseconds / _duration!.inMilliseconds
-                        : 0.0,
-                  ),
-                ],
+        iconTheme: IconThemeData(
+        color: Colors.black, //change your color here
+    ),
+    centerTitle: false,
+    title: Text('URBANTATAR',
+    style: const TextStyle(
+    fontFamily: "Montserrat",
+    fontSize: 20,
+    )).shimmer(primaryColor: red, secondaryColor: green),
+    shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+    ),
+    backgroundColor: Colors.transparent,
+    // Colors.white.withOpacity(0.1),
+    elevation: 0,
+    ),
+        backgroundColor: Colors.white,
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: StreamBuilder<SequenceState?>(
+                  stream: _player.sequenceStateStream,
+                  builder: (context, snapshot) {
+                    final state = snapshot.data;
+                    if (state?.sequence.isEmpty ?? true) return SizedBox();
+                    final metadata = state!.currentSource!.tag as MediaItem;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Center(
+                                child:
+                                Image.network(metadata.artUri.toString())),
+                          ),
+                        ),
+                        Text(metadata.album!,
+                            style: Theme.of(context).textTheme.headline6),
+                        Text(metadata.title),
+                      ],
+                    );
+                  },
+                ),
               ),
-            ),
-            Text(
-              _position != null
-                  ? '$_positionText / $_durationText'
-                  : _duration != null
-                  ? _durationText
-                  : '',
-              style: const TextStyle(fontSize: 24.0),
-            ),
-          ],
+              ControlButtons(_player),
+              StreamBuilder<PositionData>(
+                stream: _positionDataStream,
+                builder: (context, snapshot) {
+                  final positionData = snapshot.data;
+                  return SeekBar(
+                    duration: positionData?.duration ?? Duration.zero,
+                    position: positionData?.position ?? Duration.zero,
+                    bufferedPosition:
+                    positionData?.bufferedPosition ?? Duration.zero,
+                    onChangeEnd: (newPosition) {
+                      _player.seek(newPosition);
+                    },
+                  );
+                },
+              ),
+              SizedBox(height: 8.0),
+            ],
+          ),
+        ));}
+}
+
+class ControlButtons extends StatelessWidget {
+  final AudioPlayer player;
+
+  ControlButtons(this.player);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        IconButton(
+          icon: Icon(Icons.volume_up),
+          onPressed: () {
+            showSliderDialog(
+              context: context,
+              title: "Adjust volume",
+              divisions: 10,
+              min: 0.0,
+              max: 1.0,
+              stream: player.volumeStream,
+              onChanged: player.setVolume,
+            );
+          },
         ),
-        Text('State: $_audioPlayerState'),
+        StreamBuilder<SequenceState?>(
+          stream: player.sequenceStateStream,
+          builder: (context, snapshot) => IconButton(
+            icon: Icon(Icons.skip_previous),
+            onPressed: player.hasPrevious ? player.seekToPrevious : null,
+          ),
+        ),
+        StreamBuilder<PlayerState>(
+          stream: player.playerStateStream,
+          builder: (context, snapshot) {
+            final playerState = snapshot.data;
+            final processingState = playerState?.processingState;
+            final playing = playerState?.playing;
+            if (processingState == ProcessingState.loading ||
+                processingState == ProcessingState.buffering) {
+              return Container(
+                margin: EdgeInsets.all(8.0),
+                width: 64.0,
+                height: 64.0,
+                child: CircularProgressIndicator(),
+              );
+            } else if (playing != true) {
+              return IconButton(
+                icon: Icon(Icons.play_arrow),
+                iconSize: 64.0,
+                onPressed: player.play,
+              );
+            } else if (processingState != ProcessingState.completed) {
+              return IconButton(
+                icon: Icon(Icons.pause),
+                iconSize: 64.0,
+                onPressed: player.pause,
+              );
+            } else {
+              return IconButton(
+                icon: Icon(Icons.replay),
+                iconSize: 64.0,
+                onPressed: () => player.seek(Duration.zero,
+                    index: player.effectiveIndices!.first),
+              );
+            }
+          },
+        ),
+        StreamBuilder<SequenceState?>(
+          stream: player.sequenceStateStream,
+          builder: (context, snapshot) => IconButton(
+            icon: Icon(Icons.skip_next),
+            onPressed: player.hasNext ? player.seekToNext : null,
+          ),
+        ),
+        StreamBuilder<double>(
+          stream: player.speedStream,
+          builder: (context, snapshot) => IconButton(
+            icon: Text("${snapshot.data?.toStringAsFixed(1)}x",
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            onPressed: () {
+              showSliderDialog(
+                context: context,
+                title: "Adjust speed",
+                divisions: 10,
+                min: 0.5,
+                max: 1.5,
+                stream: player.speedStream,
+                onChanged: player.setSpeed,
+              );
+            },
+          ),
+        ),
       ],
-    ));
-  }
-
-  void _initAudioPlayer() {
-    _audioPlayer = AudioPlayer(mode: mode);
-
-    _durationSubscription = _audioPlayer.onDurationChanged.listen((duration) {
-      setState(() => _duration = duration);
-
-      if (Theme.of(context).platform == TargetPlatform.iOS) {
-        // optional: listen for notification updates in the background
-        _audioPlayer.notificationService.startHeadlessService();
-
-        // set at least title to see the notification bar on ios.
-        _audioPlayer.notificationService.setNotification(
-          title: widget.episodeItem.episodenum,
-          artist: widget.episodeItem.episode,
-          albumTitle: '',
-          imageUrl: widget.episodeItem.image,
-          forwardSkipInterval: const Duration(seconds: 15), // default is 30s
-          backwardSkipInterval: const Duration(seconds: 15), // default is 30s
-          duration: duration,
-          enableNextTrackButton: true,
-          enablePreviousTrackButton: true,
-        );
-      }
-    });
-
-    _positionSubscription =
-        _audioPlayer.onAudioPositionChanged.listen((p) => setState(() {
-          _position = p;
-        }));
-
-    _playerCompleteSubscription =
-        _audioPlayer.onPlayerCompletion.listen((event) {
-          _onComplete();
-          setState(() {
-            _position = _duration;
-          });
-        });
-
-    _playerErrorSubscription = _audioPlayer.onPlayerError.listen((msg) {
-      print('audioPlayer error : $msg');
-      setState(() {
-        _playerState = PlayerState.STOPPED;
-        _duration = const Duration();
-        _position = const Duration();
-      });
-    });
-
-    _playerControlCommandSubscription =
-        _audioPlayer.notificationService.onPlayerCommand.listen((command) {
-          print('command: $command');
-        });
-
-    _audioPlayer.onPlayerStateChanged.listen((state) {
-      if (mounted) {
-        setState(() {
-          _audioPlayerState = state;
-        });
-      }
-    });
-
-    _audioPlayer.onNotificationPlayerStateChanged.listen((state) {
-      if (mounted) {
-        setState(() => _audioPlayerState = state);
-      }
-    });
-
-    _playingRouteState = PlayingRoute.SPEAKERS;
-  }
-
-  Future<int> _play() async {
-    final playPosition = (_position != null &&
-        _duration != null &&
-        _position!.inMilliseconds > 0 &&
-        _position!.inMilliseconds < _duration!.inMilliseconds)
-        ? _position
-        : null;
-    final result = await _audioPlayer.play(url, position: playPosition);
-    if (result == 1) {
-      setState(() => _playerState = PlayerState.PLAYING);
-    }
-    _audioPlayer.setPlaybackRate();
-
-    return result;
-  }
-
-  Future<int> _pause() async {
-    final result = await _audioPlayer.pause();
-    if (result == 1) {
-      setState(() => _playerState = PlayerState.PAUSED);
-    }
-    return result;
-  }
-
-
-  Future<int> _stop() async {
-    final result = await _audioPlayer.stop();
-    if (result == 1) {
-      setState(() {
-        _playerState = PlayerState.STOPPED;
-        _position = const Duration();
-      });
-    }
-    return result;
-  }
-
-  void _onComplete() {
-    setState(() => _playerState = PlayerState.STOPPED);
+    );
   }
 }

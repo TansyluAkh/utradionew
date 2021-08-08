@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ut_radio/pages/playerfunc.dart';
 import '/pages/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'episodeplayer.dart';
 
 class CardGrid extends StatelessWidget {
   final episodeItem;
-  CardGrid({required this.episodeItem,});
+  final playInfo;
+  CardGrid({required this.episodeItem, this.playInfo});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +17,7 @@ class CardGrid extends StatelessWidget {
         padding: EdgeInsets.all(10.0),
     child: InkWell(
         onTap: (){ Navigator.push(context, MaterialPageRoute(
-            builder: (context) => PodcastScreen(episodeItem)));},
+            builder: (context) => MyPlayer(episodeItem: episodeItem, playInfo: playInfo)));},
         child:Card(
           elevation: 6.0,
           shadowColor: green.withOpacity(.3),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ut_radio/pages/episodescard.dart';
 import 'package:velocity_x/velocity_x.dart';
 import '/pages/constants.dart';
 import '/model/episode.dart';
@@ -26,9 +27,9 @@ class _EpisodesState extends State<Episodes> {
             color: Colors.black, //change your color here
           ),
           centerTitle: false,
-          titleSpacing: 0.0,
           title: Text('URBANTATAR',
               style: const TextStyle(
+                fontFamily: "Montserrat",
                 fontSize: 20,
               )).shimmer(primaryColor: red, secondaryColor: green),
           shape: RoundedRectangleBorder(
@@ -41,18 +42,15 @@ class _EpisodesState extends State<Episodes> {
     body:
       SingleChildScrollView(
           child:  FutureBuilder(
+            initialData: initData,
           future: getEpisodesData(widget.name),
-          initialData: [Center(child:CircularProgressIndicator(
-          backgroundColor: Colors.white,
-    color: green,
-    )),],
           builder: (BuildContext context, AsyncSnapshot text) {
     return
           ListView.builder(
-          itemCount: text!.data.length,
+          itemCount:  text!.data != null ? text!.data[0].length : 1,
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
           physics: ScrollPhysics(),
           itemBuilder: (context, index) {
-          return text!.data[index];}
+          return CardGrid(episodeItem:text!.data[0][index], playInfo: text!.data[1]);}
           );})));}}

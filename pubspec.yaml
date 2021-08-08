@@ -11,7 +11,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  audioplayers: ^0.19.1
   google_fonts:
   velocity_x: ^3.0.0
   radio_player: ^0.1.1
@@ -19,6 +18,9 @@ dependencies:
   animated_bottom_navigation_bar: ^0.3.2
   blobs: ^2.0.0
   font_awesome_flutter: ^9.1.0
+  just_audio: ^0.9.5
+  syncfusion_flutter_sliders:
+  just_audio_background:
 dev_dependencies:
   flutter_test:
     sdk: flutter
