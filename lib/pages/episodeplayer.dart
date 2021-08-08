@@ -3,10 +3,8 @@ import '/pages/home_page.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 class PodcastScreen extends StatefulWidget {
-  final image;
-  final audio;
-  final description;
-  const PodcastScreen({Key? key, this.image, this.audio, this.description}) : super(key: key);
+  final episodeItem;
+  const PodcastScreen( this.episodeItem);
   @override
   _PodcastScreenState createState() => _PodcastScreenState();
 }
@@ -79,7 +77,7 @@ class _PodcastScreenState extends State<PodcastScreen> {
                             ),
                           ],
                         ),
-                        child: Image.network(widget.image),
+                        child: Image.network(widget.episodeItem.image),
                       ),
                       Text(
                         "Empathizing With users",
