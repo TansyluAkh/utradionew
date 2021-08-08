@@ -11,8 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  audioplayers: ^0.18.3
-  flutter_staggered_grid_view: ^0.4.0
+  audioplayers: ^0.19.1
   google_fonts:
   velocity_x: ^3.0.0
   radio_player: ^0.1.1
@@ -20,7 +19,6 @@ dependencies:
   animated_bottom_navigation_bar: ^0.3.2
   blobs: ^2.0.0
   font_awesome_flutter: ^9.1.0
-  syncfusion_flutter_sliders: 
 dev_dependencies:
   flutter_test:
     sdk: flutter
