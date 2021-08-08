@@ -1,9 +1,9 @@
 import '/model/radio.dart';
 import 'package:radio_player/radio_player.dart';
-import '/pages/loading.dart';
-import '/pages/podcastslibrary.dart';
+import '/pages/createblob.dart';
+import '/pages/serieslibrary.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '/pages/colors.dart';
+import '/pages/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
         if (value[2] != '') {
           metadata = value;
         } else {
-          metadata = ['hello', 'hello', 'hello'];
+          metadata = [' ', ' ', ' '];
         }
         print(metadata);
         getInfo();
@@ -230,7 +230,7 @@ class _HomePageState extends State<HomePage> {
               : Center(
             child: CircularProgressIndicator(
                 backgroundColor: Colors.white,
-              color: Color(0xFF474747),
+              color: green,
             ),
           ),
           )]),

@@ -1,52 +1,22 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:velocity_x/velocity_x.dart';
-import '/pages/colors.dart';
-import '/model/song.dart';
+import '/pages/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'PodcastPlayer.dart';
-class EpisodesCarousel extends StatelessWidget {
+import 'episodeplayer.dart';
+
+class CardGrid extends StatelessWidget {
+  final episodeItem;
+  CardGrid({required this.episodeItem,});
+
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery
-        .of(context)
-        .size
-        .width;
-    double height = MediaQuery
-        .of(context)
-        .size
-        .height;
-    return Scaffold(
-        appBar: AppBar(
-          iconTheme: IconThemeData(
-            color: Colors.black, //change your color here
-          ),
-          centerTitle: false,
-          titleSpacing: 0.0,
-          title: Text('URBANTATAR',
-              style: const TextStyle(
-                fontSize: 20,
-              )).shimmer(primaryColor: red, secondaryColor: green),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
-          ),
-          backgroundColor: Colors.transparent,
-          // Colors.white.withOpacity(0.1),
-          elevation: 0,
-        ),
-    body:
-      SingleChildScrollView(
-          child:
-          ListView.builder(
-          itemCount: latestList.length,
-          scrollDirection: Axis.vertical,
-          shrinkWrap: true,
-          physics: ScrollPhysics(),
-          itemBuilder: (context, index) {
-          var latest = latestList[index];
-          return InkWell(
-          onTap: (){ Navigator.push(context, MaterialPageRoute(
-          builder: (context) => PodcastScreen(image: latest.image, description: latest.title, audio: latest.audio)));},
-          child:Card(
+    return GridTile(
+        child: Padding(
+        padding: EdgeInsets.all(10.0),
+    child: InkWell(
+        onTap: (){ Navigator.push(context, MaterialPageRoute(
+            builder: (context) => PodcastScreen(episodeItem)));},
+        child:Card(
           elevation: 6.0,
           shadowColor: green.withOpacity(.3),
           margin: EdgeInsets.symmetric(
@@ -68,7 +38,7 @@ class EpisodesCarousel extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12.0),
                     image: DecorationImage(
-                      image: NetworkImage(latest.image),
+                      image: NetworkImage(episodeItem.image),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -89,19 +59,18 @@ class EpisodesCarousel extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           child: Text(
-                            latest.genre,
+                            episodeItem.date,
                             style: kFabStyle.copyWith(color: green),
                           ),
                         ),
                         Spacer(),
                         Text(
-                          latest.title,
+                          episodeItem.episodenum,
                           overflow: TextOverflow.ellipsis,
                           style: kTitleStyle,
                         ),
                         Spacer(),
-                        Text(
-                          "By ${latest.artist}",
+                        Text(episodeItem.episode,
                           overflow: TextOverflow.ellipsis,
                           style: kSubtitleStyle,
                         ),
@@ -113,13 +82,14 @@ class EpisodesCarousel extends StatelessWidget {
                   child: CircleAvatar(
                     radius: 15.0,
                     backgroundColor: green.withOpacity(.1),
-                    child: Icon(
-                      FontAwesomeIcons.play,
-                      color: green,
-                      size: 10.0,
+                    child: IconButton(
+                      color: green, onPressed: () {  }, icon: Icon(FontAwesomeIcons.play),
                     ),
                   ),
                 )
               ],
             ),
-          ),));})));}}
+          ),))
+    ));
+  }
+}

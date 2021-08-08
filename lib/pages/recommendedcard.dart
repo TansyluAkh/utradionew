@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import '/pages/colors.dart';
-import '/model/song.dart';
+import '/pages/constants.dart';
+import '/model/episode.dart';
 
 class RecommendedCard extends StatelessWidget {
-  final Podcast podcast;
+  final Episode episodeItem;
   final height;
   final width;
-  RecommendedCard({required this.podcast, this.width, this.height});
+  RecommendedCard({required this.episodeItem, this.width, this.height});
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -25,7 +25,7 @@ class RecommendedCard extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
                 image: DecorationImage(
-                  image: NetworkImage(podcast.image),
+                  image: NetworkImage(episodeItem.image),
                   fit: BoxFit.cover,
                 ),
               ),
@@ -33,12 +33,12 @@ class RecommendedCard extends StatelessWidget {
           ),
           Spacer(),
           Text(
-            podcast.title,
+            episodeItem.episodenum,
             overflow: TextOverflow.ellipsis,
             style: kTitleStyle,
           ),
           SizedBox(height: 5.0),
-          Text(podcast.artist, style: kSubtitleStyle)
+          Text(episodeItem.series, style: kSubtitleStyle)
         ],
       ),
     );

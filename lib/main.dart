@@ -1,3 +1,5 @@
+import 'package:ut_radio/pages/constants.dart';
+
 import 'pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -94,7 +96,7 @@ class _SplashAppState extends State<SplashApp> {
     }
     if (_initialized){widget.onInitializationComplete();}
     return Center(
-      child: CircularProgressIndicator(),
+      child: CircularProgressIndicator(color:green),
     );
   }
 }

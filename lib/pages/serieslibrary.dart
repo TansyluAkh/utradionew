@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ut_radio/pages/seriesgrid.dart';
-import '/pages/colors.dart';
+import 'package:ut_radio/pages/episodescard.dart';
+import 'package:ut_radio/pages/seriescard.dart';
+import '/pages/constants.dart';
 import '/model/series.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -35,22 +36,22 @@ class Library extends StatelessWidget {
         body: new SingleChildScrollView(
             child:  FutureBuilder(
               future: getSeriesData(),
-                    initialData: [SeriesGrid(
-            title: " ",
-            image: "https://urban.tatar/podcast/limon/limon.jpg")],
+                    initialData: [Center(child:CircularProgressIndicator(
+                      backgroundColor: Colors.white,
+                      color: green,
+                    ))],
                     builder: (BuildContext context, AsyncSnapshot text) {
                       return GridView.builder(
-                        padding: EdgeInsets.all(10.0),
-                        shrinkWrap: true,
+                      padding: EdgeInsets.all(10.0),
+                      shrinkWrap: true,
+                          physics: ScrollPhysics(),
+                      scrollDirection: Axis.vertical,
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-    childAspectRatio: 3 / 2, crossAxisCount: 2,
-                        
-    ),
-    itemCount: text!.data.length,
-    itemBuilder: (BuildContext ctx, index) {
-    return text!.data[index];
-    });})),
-
-        );
-  }
-}
+                        mainAxisSpacing: 10,
+                        crossAxisSpacing: 10,crossAxisCount: 2,
+                      ),
+                      itemCount: text!.data.length,
+                      itemBuilder: (BuildContext ctx, index) {
+                      return text!.data[index];
+                      });})));
+}}

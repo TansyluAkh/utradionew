@@ -1,11 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:ut_radio/pages/seriesgrid.dart';
-class Series {
-  final String title;
-  final String image;
-  Series({required this.title,  required this.image});
-}
+import 'package:ut_radio/pages/seriescard.dart';
 
 
 Future<List<SeriesGrid>> getSeriesData() async {
