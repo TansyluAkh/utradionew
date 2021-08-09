@@ -21,7 +21,7 @@ Future<List<Object>> getEpisodesData(name) async {
   List<Object> arr = [];
   List<AudioSource> playlist = [];
   int _nextMediaId = 0;
-  QuerySnapshot querySnapshot = await podcasts.get();
+  QuerySnapshot querySnapshot = await podcasts.orderBy('number', descending: true).get();
   final allData = querySnapshot.docs.forEach((element) {
     Map<String, dynamic>? data = element.data() as Map<String, dynamic>?;
     var value = data!['image'].toString();

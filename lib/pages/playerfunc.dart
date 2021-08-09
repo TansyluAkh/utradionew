@@ -12,7 +12,8 @@ import 'package:ut_radio/pages/constants.dart';
 class MyPlayer extends StatefulWidget {
   final episodeItem;
   final playInfo;
-  const MyPlayer( {Key? key, this.playInfo, this.episodeItem}) : super(key: key);
+  final index;
+  const MyPlayer( {Key? key, this.playInfo, this.episodeItem, this.index}) : super(key: key);
   @override
   _MyPlayerState createState() => _MyPlayerState();
 }
@@ -30,6 +31,7 @@ class _MyPlayerState extends State<MyPlayer> {
       statusBarColor: Colors.black,
     ));
     _playlist = ConcatenatingAudioSource(children: widget.playInfo);
+    _playlist.move(widget.index, 0);
     _init();
   }
 
@@ -104,7 +106,7 @@ class _MyPlayerState extends State<MyPlayer> {
                       children: [
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(45.0),
                             child: Center(
                                 child:
                                 Image.network(metadata.artUri.toString())),

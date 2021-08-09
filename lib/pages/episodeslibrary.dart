@@ -52,5 +52,5 @@ class _EpisodesState extends State<Episodes> {
           shrinkWrap: true,
           physics: ScrollPhysics(),
           itemBuilder: (context, index) {
-          return CardGrid(episodeItem:text!.data[0][index], playInfo: text!.data[1]);}
+          return CardGrid(episodeItem:text!.data[0][index], playInfo: text!.data[1], index: index);}
           );})));}}

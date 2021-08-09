@@ -8,7 +8,8 @@ import 'episodeplayer.dart';
 class CardGrid extends StatelessWidget {
   final episodeItem;
   final playInfo;
-  CardGrid({required this.episodeItem, this.playInfo});
+  final index;
+  CardGrid({required this.episodeItem, this.playInfo, this.index});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,7 @@ class CardGrid extends StatelessWidget {
         padding: EdgeInsets.all(10.0),
     child: InkWell(
         onTap: (){ Navigator.push(context, MaterialPageRoute(
-            builder: (context) => MyPlayer(episodeItem: episodeItem, playInfo: playInfo)));},
+            builder: (context) => MyPlayer(episodeItem: episodeItem, playInfo: playInfo, index: index)));},
         child:Card(
           elevation: 6.0,
           shadowColor: green.withOpacity(.3),
