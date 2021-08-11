@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
-Color green = Color(0xff9CA97B);
+Color darkgreen = Color(0xffa97b85);
+Color green = Color(0xff95a190);
 Color red = Color(0xffE2432D);
 Color white = Colors.white;
 Color black = Colors.black;

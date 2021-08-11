@@ -37,7 +37,7 @@ class Library extends StatelessWidget {
               future: getSeriesData(),
                     initialData: [Center(child:CircularProgressIndicator(
                       backgroundColor: Colors.white,
-                      color: green,
+                      color: white,
                     ))],
                     builder: (BuildContext context, AsyncSnapshot text) {
                       return GridView.builder(

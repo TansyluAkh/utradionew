@@ -1,6 +1,6 @@
 import '/model/radio.dart';
 import 'package:radio_player/radio_player.dart';
-import '/pages/createblob.dart';
+import '/pages/homeblob.dart';
 import '/pages/serieslibrary.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/pages/constants.dart';
@@ -158,7 +158,6 @@ class _HomePageState extends State<HomePage> {
     BlobController blobCtrl = BlobController();
     return Scaffold(
         appBar: AppBar(
-
           title: Text('URBANTATAR',
               style: const TextStyle(
                 fontSize: 20,
@@ -224,8 +223,10 @@ class _HomePageState extends State<HomePage> {
                     url: rad.image,
                     width: width * 0.9,
                     height: width * 0.9,
-                    redcolor: Color(int.parse(rad.redcolor)),
-                    greencolor: Color(int.parse(rad.greencolor)));
+                    redcolor: red,
+                    id: '19-7-416',
+                    idback: '9-7-3291',
+                    greencolor: green);
               })
               : Center(
             child: CircularProgressIndicator(

@@ -5,19 +5,23 @@ import 'package:ut_radio/pages/episodescard.dart';
 import 'package:just_audio/just_audio.dart';
 class Episode {
   final String episodenum;
+  final String id;
+  final String idback;
   final String episode;
   final String audio;
   final String image;
   final String date;
   final String series;
   final String description;
-  Episode({Key? key, required this.episodenum, required this.episode, required this.audio, required this.image, required this.date, required this.description, required this.series});
+  Episode({Key? key, required this.episodenum, required this.episode, required this.id, required this.idback,  required this.audio, required this.image, required this.date, required this.description, required this.series});
 
 }
 
 
 Future<List<Object>> getEpisodesData(name) async {
   CollectionReference podcasts = FirebaseFirestore.instance.collection(name);
+  CollectionReference blobs = FirebaseFirestore.instance.collection('blobs');
+  var q = await blobs.doc('episodes').get();
   List<Object> arr = [];
   List<AudioSource> playlist = [];
   int _nextMediaId = 0;
@@ -40,7 +44,7 @@ Future<List<Object>> getEpisodesData(name) async {
       episodenum: data['episodenum'].toString(),
       episode: data['episode'].toString(),
       image: data['image'].toString(),
-      date: data['date'].toString(), series: data['name'].toString(), description: data['description'].toString(),);
+      date: data['date'].toString(), series: data['name'].toString(), id: q['id'], idback: q['idback'] , description: data['description'].toString(),);
     arr.add(episodeItem);
     print(value);});
   return [arr, playlist];
@@ -58,7 +62,7 @@ artUri: Uri.parse(
 Episode episodeInit = Episode(audio:'',
   episodenum: '',
   episode: '',
-  image: 'https://s6.gifyu.com/images/loadut.jpg',
-  date: '', series: '', description: '');
+  image: '',
+  date: '', series: '', description: '', id: '9-7-3291', idback:'9-7-3291');
 
-var initData = [[episodeInit, episodeInit], songInit];
+var initData = [[episodeInit], songInit];
