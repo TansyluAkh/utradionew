@@ -117,8 +117,13 @@ class _MyPlayerState extends State<MyPlayer> {
                               padding: EdgeInsets.only(bottom:35),
                               child:ClipPage(url:metadata.artUri.toString(),height:height, width: width, redcolor: green, greencolor: green,),
                             ),
-                            Text(metadata.album!,
-                                style: Theme.of(context).textTheme.headline6),
+                            TextButton(
+                              style: ButtonStyle(
+                                foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                              ),
+                              onPressed: () { },
+                              child: Text(metadata.album!,
+                      style: Theme.of(context).textTheme.headline6)),
                             SizedBox(height:10),
                      Text(metadata.title, style: Theme.of(context).textTheme.subtitle1),
                             SizedBox(height:10),
