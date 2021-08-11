@@ -120,6 +120,7 @@ class _MyPlayerState extends State<MyPlayer> {
                             TextButton(
                               style: ButtonStyle(
                                 foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                                backgroundColor: MaterialStateProperty.all<Color>(Colors.blue),
                               ),
                               onPressed: () { },
                               child: Text(metadata.album!,
