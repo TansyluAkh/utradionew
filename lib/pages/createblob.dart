@@ -41,7 +41,7 @@ class _ClipPageState extends State<ClipPage> {
         height: widget.width * 0.8,
         alignment: Alignment.center,
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+          filter: ImageFilter.blur(sigmaX: 56, sigmaY: 56),
           child: Container(
             decoration:  BoxDecoration( color: widget.greencolor.withOpacity(0.3),borderRadius: BorderRadius.circular(30)),
           ),

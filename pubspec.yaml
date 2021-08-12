@@ -21,6 +21,7 @@ dependencies:
   just_audio: ^0.9.5
   syncfusion_flutter_sliders:
   just_audio_background:
+  url_launcher: ^6.0.9
 dev_dependencies:
   flutter_test:
     sdk: flutter

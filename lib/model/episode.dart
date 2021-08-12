@@ -12,8 +12,9 @@ class Episode {
   final String image;
   final String date;
   final String series;
+  final String social;
   final String description;
-  Episode({Key? key, required this.episodenum, required this.episode, required this.id, required this.idback,  required this.audio, required this.image, required this.date, required this.description, required this.series});
+  Episode({Key? key, required this.social, required this.episodenum, required this.episode, required this.id, required this.idback,  required this.audio, required this.image, required this.date, required this.description, required this.series});
 
 }
 
@@ -34,14 +35,15 @@ Future<List<Object>> getEpisodesData(name) async {
             data['audio']),
         tag: MediaItem(
           id: '${_nextMediaId++}',
-          album: data['episodenum'],
-          title: data['episode'],
+          album: data['episodenum'].toString(),
+          title: data['episode'].toString(),
           artUri: Uri.parse(
-              data['image']),
+              data['image'].toString()),
         ));
     playlist.add(song);
     Episode episodeItem = Episode(audio:data['audio'].toString(),
       episodenum: data['episodenum'].toString(),
+      social: data['social'].toString(),
       episode: data['episode'].toString(),
       image: data['image'].toString(),
       date: data['date'].toString(), series: data['name'].toString(), id: q['id'], idback: q['idback'] , description: data['description'].toString(),);
@@ -63,6 +65,6 @@ Episode episodeInit = Episode(audio:'',
   episodenum: '',
   episode: '',
   image: '',
-  date: '', series: '', description: '', id: '9-7-3291', idback:'9-7-3291');
+  date: '', series: '', description: '', id: '9-7-3291', idback:'9-7-3291', social: '');
 
 var initData = [[episodeInit], songInit];
