@@ -22,7 +22,7 @@ class _HomePageState extends State<HomePage> {
   bool _ispressed = false;
   String _likedsong = 'start';
   RadioPlayer _audioPlayer = RadioPlayer();
-  List<MyRadio>? radios;
+  List radios = [];
   MyRadio? _selectedRadio;
   List<String>? metadata;
   String _info0 = 'empty';
@@ -63,10 +63,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   fetchRadios() async {
-    final radioJson = await rootBundle.loadString("assets/radio.json");
-    radios = MyRadioList
-        .fromJson(radioJson)
-        .radios;
+    CollectionReference  streams = FirebaseFirestore.instance.collection('streams');
+    QuerySnapshot querySnapshot = await streams.orderBy('order', descending: false).get();
+    final allData = querySnapshot.docs.forEach((element) {
+      Map<String, dynamic>? data = element.data() as Map<String, dynamic>?;
+      print(data);
+      radios.add(MyRadio.fromMap(data!));}),
     _selectedRadio = radios![0];
     print(radios);
     setState(() {});
@@ -77,7 +79,7 @@ class _HomePageState extends State<HomePage> {
     _audioPlayer.play();
     _selectedRadio = radios!.firstWhere((element) => element.url == url);
     _selectedRadio = radios!.firstWhere((element) => element.url == url);
-    print(_selectedRadio!.name);
+    print(_selectedRadio!.category);
     setState(() {});
   }
 
@@ -199,8 +201,7 @@ class _HomePageState extends State<HomePage> {
           Align(
           alignment: Alignment.center,
           child:
-          radios != null
-              ? VxSwiper.builder(
+          radios.length>0 ? VxSwiper.builder(
               height: width * 0.9,
               itemCount: radios!.length,
               aspectRatio: 1.0,
@@ -219,22 +220,22 @@ class _HomePageState extends State<HomePage> {
               },
               itemBuilder: (context, index) {
                 final rad = radios![index];
+                print(rad);
                 return ClipPage(
                     url: rad.image,
                     width: width * 0.9,
                     height: width * 0.9,
                     redcolor: red,
-                    id: '19-7-416',
-                    idback: '9-7-3291',
+                    id: rad.blobid,
+                    idback: rad.idback,
                     greencolor: green);
               })
-              : Center(
-            child: CircularProgressIndicator(
-                backgroundColor: Colors.white,
-              color: green,
-            ),
-          ),
-          )]),
+           :
+          Center(
+            child: CircularProgressIndicator(color:green),
+          ))
+          ,
+          ]),
         floatingActionButton:
         FloatingActionButton(
           mini:true,

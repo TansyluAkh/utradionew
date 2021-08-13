@@ -9,6 +9,7 @@ void main() {
   runApp(
     SplashApp(
       key: UniqueKey(),
+
       onInitializationComplete: () => runMainApp(),
     ),
   );
@@ -81,6 +82,7 @@ class _SplashAppState extends State<SplashApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: '',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -90,17 +92,21 @@ class _SplashAppState extends State<SplashApp> {
 
   Widget _buildBody() {
     if (_hasError) {
-      return Center(
+      return  Scaffold(
+          backgroundColor: white,
+          body: Center(
         // ignore: deprecated_member_use
         child: RaisedButton(
           child: Text('retry'),
           onPressed: () => main(),
         ),
-      );
+      ));
     }
     if (_initialized){widget.onInitializationComplete();}
-    return Center(
+    return Scaffold(
+    backgroundColor: white,
+        body: Center(
       child: CircularProgressIndicator(color:green),
-    );
+    ));
   }
 }
