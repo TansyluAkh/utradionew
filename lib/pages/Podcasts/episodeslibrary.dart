@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ut_radio/pages/episodescard.dart';
+import 'package:ut_radio/pages/Podcasts/episodescard.dart';
 import 'package:velocity_x/velocity_x.dart';
 import '/pages/constants.dart';
 import '/model/episode.dart';

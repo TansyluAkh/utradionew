@@ -5,11 +5,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'common.dart';
+import 'playermath.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:ut_radio/pages/constants.dart';
-import '/pages/createblob.dart';
+import 'Podcasts/createblob.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyPlayer extends StatefulWidget {

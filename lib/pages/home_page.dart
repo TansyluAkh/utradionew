@@ -1,7 +1,9 @@
+import 'package:ut_radio/pages/my_flutter_app_icons.dart';
+
 import '/model/radio.dart';
 import 'package:radio_player/radio_player.dart';
 import '/pages/homeblob.dart';
-import '/pages/serieslibrary.dart';
+import 'Podcasts/serieslibrary.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '/pages/constants.dart';
 import 'package:flutter/material.dart';
@@ -260,9 +262,10 @@ class _HomePageState extends State<HomePage> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar:
         AnimatedBottomNavigationBar(
+          iconSize: height*0.06,
           icons:
-          [FontAwesomeIcons.microphone,
-            FontAwesomeIcons.child],
+          [MyFlutterApp.podcast,
+            MyFlutterApp.mom],
           activeIndex: _bottomNavIndex,
           gapLocation: GapLocation.center,
           notchSmoothness: NotchSmoothness.verySmoothEdge,

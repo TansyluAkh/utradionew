@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:ut_radio/pages/seriescard.dart';
+import 'package:ut_radio/pages/Podcasts/seriescard.dart';
 
 
 Future<List<SeriesGrid>> getSeriesData() async {

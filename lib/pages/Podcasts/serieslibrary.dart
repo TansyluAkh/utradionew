@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:ut_radio/pages/episodescard.dart';
-import 'package:ut_radio/pages/seriescard.dart';
+import 'package:ut_radio/pages/Podcasts/episodescard.dart';
+import 'package:ut_radio/pages/Podcasts/seriescard.dart';
 import '/pages/constants.dart';
 import '/model/series.dart';
 import 'package:velocity_x/velocity_x.dart';
