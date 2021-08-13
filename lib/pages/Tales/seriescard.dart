@@ -1,23 +1,25 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ut_radio/pages/constants.dart';
-import 'package:ut_radio/pages/Podcasts/episodeslibrary.dart';
+import 'package:ut_radio/pages/Tales/episodeslibrary.dart';
 
 class SeriesGrid extends StatelessWidget {
-
+  final String collection;
   final String image;
   final String title;
-  SeriesGrid({required this.title,
+  SeriesGrid({required this.title, required this.collection,
     required this.image,});
 
   @override
   Widget build(BuildContext context) {
+
     return GridTile(
         child: Padding(
         padding: EdgeInsets.all(10.0),
     child: InkWell(
-    onTap: (){ Navigator.push(context, MaterialPageRoute(
-    builder: (context) => Episodes(name:title)));},
+    onTap: (){
+      Navigator.push(context, MaterialPageRoute(
+    builder: (context) => Episodes(name:collection)));},
     child: Stack(
       children:[
         ClipRRect(

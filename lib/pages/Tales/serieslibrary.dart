@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ut_radio/pages/constants.dart';
-import 'package:ut_radio/model/Podcasts/series.dart';
+import 'package:ut_radio/model/Tales/series.dart';
 import 'package:velocity_x/velocity_x.dart';
 
-class PodcastsLibrary extends StatelessWidget {
+class TalesLibrary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -33,7 +33,8 @@ class PodcastsLibrary extends StatelessWidget {
             child:  FutureBuilder(
               future: getSeriesData(),
                     builder: (BuildContext context, AsyncSnapshot text) {
-                      return text.data != null ? GridView.builder(
+                      return text.data != null ?
+                       GridView.builder(
                       padding: EdgeInsets.all(10.0),
                       shrinkWrap: true,
                           physics: ScrollPhysics(),
@@ -46,8 +47,8 @@ class PodcastsLibrary extends StatelessWidget {
                       itemBuilder: (BuildContext ctx, index) {
                       return text!.data[index];
                       }):Center(child:CircularProgressIndicator(
-                        backgroundColor: Colors.white,
-                        color: green,
+                      backgroundColor: Colors.white,
+                      color: green,
                       ));
               })));
 }}

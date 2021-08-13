@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ut_radio/pages/Podcasts/playerfunc.dart';
+import 'package:ut_radio/pages/Tales/playerfunc.dart';
 import 'package:ut_radio/pages/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -61,7 +61,7 @@ class CardGrid extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           child: Text(
-                            episodeItem.date,
+                            episodeItem.author,
                             style: kFabStyle.copyWith(color: green),
                           ),
                         ),
@@ -72,7 +72,7 @@ class CardGrid extends StatelessWidget {
                           style: kTitleStyle,
                         ),
                         Spacer(),
-                        Text(episodeItem.episode,
+                        Text(episodeItem.actor,
                           overflow: TextOverflow.ellipsis,
                           style: kSubtitleStyle,
                         ),

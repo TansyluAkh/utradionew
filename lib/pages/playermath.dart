@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import '/pages/constants.dart';
+import 'package:ut_radio/pages/constants.dart';
 
 class SeekBar extends StatefulWidget {
   final Duration duration;

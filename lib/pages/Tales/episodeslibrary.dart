@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ut_radio/pages/Podcasts/episodescard.dart';
+import 'package:ut_radio/pages/Tales/episodescard.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:ut_radio/pages/constants.dart';
-import 'package:ut_radio/model/Podcasts/episode.dart';
+import 'package:ut_radio/model/Tales/episode.dart';
 
 class Episodes extends StatefulWidget {
   final name;
@@ -53,7 +53,8 @@ class _EpisodesState extends State<Episodes> {
           itemBuilder: (context, index) {
           return CardGrid(episodeItem:text.data[0][index], playInfo: text.data[1], index: index);}
           ):Center(child:CircularProgressIndicator(
-      backgroundColor: Colors.white,
-      color: green,
-    ));})))
-    ;}}
+            backgroundColor: Colors.white,
+            color: green,
+            ))
+    ;
+            })));}}

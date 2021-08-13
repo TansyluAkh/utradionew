@@ -1,13 +1,13 @@
-import 'package:ut_radio/pages/my_flutter_app_icons.dart';
-
-import '/model/radio.dart';
-import 'package:radio_player/radio_player.dart';
-import '/pages/homeblob.dart';
-import 'Podcasts/serieslibrary.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import '/pages/constants.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ut_radio/pages/my_flutter_app_icons.dart';
+import 'package:ut_radio/model/radio.dart';
+import 'package:radio_player/radio_player.dart';
+import 'package:ut_radio/pages/homeblob.dart';
+import 'package:ut_radio/pages/Podcasts/serieslibrary.dart';
+import 'package:ut_radio/pages/Tales/serieslibrary.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:ut_radio/pages/constants.dart';
+import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' hide Blob;
 import 'package:blobs/blobs.dart';
@@ -161,7 +161,10 @@ class _HomePageState extends State<HomePage> {
         .height;
     BlobController blobCtrl = BlobController();
     return Scaffold(
+
         appBar: AppBar(
+          backwardsCompatibility: false,
+          systemOverlayStyle: SystemUiOverlayStyle(statusBarColor: Colors.transparent),
           title: Text('URBANTATAR',
               style: const TextStyle(
                 fontSize: 20,
@@ -174,28 +177,28 @@ class _HomePageState extends State<HomePage> {
           elevation: 0,
         ),
         body: Stack(children: [
-          SizedBox(
-            height: height*0.1,
-            width: width,
-          ),
           ConstrainedBox(
               constraints: BoxConstraints(maxHeight: height * 0.1),
               child: VxSwiper.builder(
-                itemCount: 2,
+                itemCount: 1,
                 height: height * 0.1,
                 viewportFraction: 1.0,
                 autoPlay: true,
-                autoPlayAnimationDuration: 5.seconds,
-                autoPlayCurve: Curves.linear,
+                autoPlayAnimationDuration: 3.seconds,
+                autoPlayCurve: Curves.easeInOut,
                 enableInfiniteScroll: true,
                 itemBuilder: (context, index) {
-                  final s = [_info, _info1][index];
+                  final s = _info+'\n'+_info1;
                   return Chip(
                     autofocus: true,
-                    label: Text(s,
-                        style: const TextStyle(
-                          fontSize: 20,
-                        )),
+                    label: Container(
+                      width: width,
+                      child: Text(s,
+                        style: TextStyle(fontSize: 20,),
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,),
+                    ),
                     backgroundColor: Colors.transparent,
                   );
                 },
@@ -246,7 +249,8 @@ class _HomePageState extends State<HomePage> {
             elevation: 0,
             onPressed: () { print('gg'); },
             child:
-            Icon(isplaying
+            Icon(
+              isplaying
                   ? FontAwesomeIcons.pause
                   : FontAwesomeIcons.play,
                 size: height * 0.05,
@@ -262,15 +266,17 @@ class _HomePageState extends State<HomePage> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar:
         AnimatedBottomNavigationBar(
-          iconSize: height*0.06,
+          splashColor: green,
+          splashRadius: 15,
+          iconSize: height*0.055,
           icons:
           [MyFlutterApp.podcast,
             MyFlutterApp.mom],
           activeIndex: _bottomNavIndex,
           gapLocation: GapLocation.center,
           notchSmoothness: NotchSmoothness.verySmoothEdge,
-          leftCornerRadius: 32,
-          rightCornerRadius: 32,
+          leftCornerRadius: 25,
+          rightCornerRadius: 25,
           onTap: (index){
             setState(() {
               _bottomNavIndex = index;
@@ -306,6 +312,9 @@ class _HomePageState extends State<HomePage> {
       _audioPlayer.pause();}
     if (index == 0){
       Navigator.push(context,
-      MaterialPageRoute(builder: (context) => Library()));}
+      MaterialPageRoute(builder: (context) => PodcastsLibrary()));}
+    if (index == 1){
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => TalesLibrary()));}
   }
 }

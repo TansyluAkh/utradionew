@@ -5,11 +5,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'playermath.dart';
+import 'package:ut_radio/pages/playermath.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:ut_radio/pages/constants.dart';
-import 'Podcasts/createblob.dart';
+import 'package:ut_radio/pages/Podcasts/createblob.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyPlayer extends StatefulWidget {
@@ -134,18 +134,17 @@ class _MyPlayerState extends State<MyPlayer> {
                           ),
                           Align(
                             alignment: Alignment.center,
-                            child: TextButton.icon(
+                            child:  TextButton.icon(
                               style: TextButton.styleFrom(
                                   backgroundColor: white,
                                   shape: const RoundedRectangleBorder(
                                       borderRadius: BorderRadius.all(
                                           Radius.circular(25))),
                                   minimumSize:
-                                      Size(height * 0.035, width * 0.1)),
+                                  Size(height * 0.03, width * 0.1)),
                               label: Text(' '+ metadata.album!,
-                                  style: Theme.of(context).textTheme.headline6),
-                              icon: Icon(FontAwesomeIcons.externalLinkAlt, size: height*0.035).shimmer(primaryColor: Color(0xff025724), secondaryColor:
-                              Color(0xff7fc168)),
+                                  style: Theme.of(context).textTheme.headline6!.copyWith(color:darkgreen, fontSize: 18)),
+                              icon: Icon(FontAwesomeIcons.externalLinkAlt, size: height*0.03, color: darkgreen),
                               onPressed: () => setState(() {
                                 _launched = _launchInBrowser(widget.episodeItem.social);
                                 print(_launched);

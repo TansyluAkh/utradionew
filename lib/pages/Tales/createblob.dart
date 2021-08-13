@@ -12,11 +12,11 @@ class ClipPage extends StatefulWidget {
 
   const ClipPage(
       {Key? key,
-      this.redcolor,
-      this.greencolor,
-      this.width,
-      this.height,
-      this.url})
+        this.redcolor,
+        this.greencolor,
+        this.width,
+        this.height,
+        this.url})
       : super(key: key);
 
   @override
@@ -29,25 +29,25 @@ class _ClipPageState extends State<ClipPage> {
     return Stack(
         alignment: Alignment.center,
         children: [
-      Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            image: DecorationImage(
-          image: NetworkImage(widget.url),
-          fit: BoxFit.cover,
-        )),
-        width: widget.width * 0.8,
-        height: widget.width * 0.8,
-        alignment: Alignment.center,
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            decoration:  BoxDecoration( color: widget.greencolor.withOpacity(0.3),borderRadius: BorderRadius.circular(10)),
+          Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                image: DecorationImage(
+                  image: NetworkImage(widget.url),
+                  fit: BoxFit.cover,
+                )),
+            width: widget.width * 0.8,
+            height: widget.width * 0.8,
+            alignment: Alignment.center,
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                decoration:  BoxDecoration( color: widget.greencolor.withOpacity(0.3),borderRadius: BorderRadius.circular(10)),
+              ),
+            ),
           ),
-        ),
-      ),
-      Align( alignment: Alignment.center, child: Image.network(widget.url, width: widget.width*0.6, fit: BoxFit.fill, alignment: Alignment.center)),
-    ]);
+          Align( alignment: Alignment.center, child: Image.network(widget.url, width: widget.width*0.6, fit: BoxFit.fill, alignment: Alignment.center)),
+        ]);
   }
 }
 

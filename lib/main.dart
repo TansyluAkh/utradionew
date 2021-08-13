@@ -1,9 +1,9 @@
+import 'package:flutter/services.dart';
 import 'package:ut_radio/pages/constants.dart';
 import 'package:ut_radio/pages/home_page.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:ut_radio/pages/playerfunc.dart';
 
 void main() {
   runApp(
@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(statusBarColor: Colors.transparent));
     return MaterialApp(
       theme: ThemeData(fontFamily: "Montserrat"),
       debugShowCheckedModeBanner: false,
