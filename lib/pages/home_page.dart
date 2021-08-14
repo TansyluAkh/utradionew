@@ -44,7 +44,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void initRadioPlayer() {
-    _audioPlayer.setMediaItem('first', 'https://ilgamsharipov.radioca.st/stream');
+    _audioPlayer.setMediaItem('first', '');
     _audioPlayer.play();
     _audioPlayer.stateStream.listen((value) {
       setState(() {
