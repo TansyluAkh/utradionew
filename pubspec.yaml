@@ -22,6 +22,7 @@ dependencies:
   syncfusion_flutter_sliders:
   just_audio_background:
   url_launcher: ^6.0.9
+  media_metadata_retriever:
 dev_dependencies:
   flutter_test:
     sdk: flutter

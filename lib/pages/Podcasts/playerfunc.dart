@@ -31,6 +31,7 @@ class _MyPlayerState extends State<MyPlayer> {
 
   @override
   void initState() {
+
     super.initState();
     _player = AudioPlayer();
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(

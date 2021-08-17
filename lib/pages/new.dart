@@ -20,21 +20,25 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool isplaying = false;
+  bool _ispressed = false;
   RadioPlayer _audioPlayer = RadioPlayer();
+  List radios = [];
+  MyRadio? _selectedRadio;
   List<String>? metadata;
-  String _category = 'Radio';
   String _info0 = ' ';
   String _info = ' ';
   String _info1 = ' ';
+
   var _bottomNavIndex = 0;
+
   @override
   void initState() {
     super.initState();
-    initRadioPlayer('');
+    fetchRadios();
+    initRadioPlayer();
   }
 
-  void initRadioPlayer(selectedRadio) {
-    _audioPlayer.setMediaItem('first', selectedRadio);
+  void initRadioPlayer() {
     _audioPlayer.stateStream.listen((value) {
       setState(() {
         isplaying = value;
@@ -48,35 +52,35 @@ class _HomePageState extends State<HomePage> {
           metadata = [' ', ' ', ' '];
         }
         print(metadata);
-        getInfo(false);
+        getInfo();
       });
     });
   }
 
-  Future<List<dynamic>> fetchRadios() async {
-    List<MyRadio> radios = [];
+  fetchRadios() async {
     CollectionReference streams =
-    FirebaseFirestore.instance.collection('streams');
+        FirebaseFirestore.instance.collection('streams');
     QuerySnapshot querySnapshot =
-    await streams.orderBy('order', descending: false).get();
+        await streams.orderBy('order', descending: false).get();
     final allData = querySnapshot.docs.forEach((element) {
-      Map<String, dynamic>? data = element.data() as Map<String, dynamic>?;
-      print(data!['text']);
-      radios.add(MyRadio.fromMap(data!));
-    }),
-        selectedRadio = radios[0];
-    return [radios, selectedRadio];
-  }
-
-  _playMusic(String url, radios, selectedRadio) {
-    _audioPlayer.setMediaItem('first', url);
-    _audioPlayer.play();
-    getInfo(selectedRadio);
-    selectedRadio = radios.firstWhere((element) => element.url == url);
-    selectedRadio = radios.firstWhere((element) => element.url == url);
-    print(selectedRadio.category);
+          Map<String, dynamic>? data = element.data() as Map<String, dynamic>?;
+          print(data);
+          radios.add(MyRadio.fromMap(data!));
+        }),
+        _selectedRadio = radios![0];
+    print(radios);
     setState(() {});
   }
+
+  _playMusic(String url) {
+    _audioPlayer.setMediaItem('first', url);
+    _audioPlayer.play();
+    _selectedRadio = radios!.firstWhere((element) => element.url == url);
+    _selectedRadio = radios!.firstWhere((element) => element.url == url);
+    print(_selectedRadio!.category);
+    setState(() {});
+  }
+
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   CollectionReference songs = FirebaseFirestore.instance.collection('songs');
 
@@ -85,14 +89,8 @@ class _HomePageState extends State<HomePage> {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     BlobController blobCtrl = BlobController();
-    return  FutureBuilder(
-        future: fetchRadios(),
-        builder: (BuildContext context, AsyncSnapshot radiosInfo) {
-          if (radiosInfo.data != null){
-            var radios = radiosInfo.data[0];
-            var selectedRadio = radiosInfo.data[1];
-            return radiosInfo.data != null ?  Scaffold(
-          appBar: AppBar(
+    return Scaffold(
+        appBar: AppBar(
           backwardsCompatibility: false,
           centerTitle: false,
           systemOverlayStyle:
@@ -102,7 +100,7 @@ class _HomePageState extends State<HomePage> {
                 style: const TextStyle(
                   fontSize: 20,
                 )).shimmer(primaryColor: red, secondaryColor: green),
-            Text(_category,
+            Text(_selectedRadio != null ? _selectedRadio!.category : '',
                 style: const TextStyle(
                   fontSize: 18,
                 )).shimmer(primaryColor: red, secondaryColor: green)
@@ -114,7 +112,7 @@ class _HomePageState extends State<HomePage> {
           // Colors.white.withOpacity(0.1),
           elevation: 0,
         ),
-        body: Column(children: [
+        body: Stack(children: [
           ConstrainedBox(
               constraints: BoxConstraints(maxHeight: height * 0.1),
               child: VxSwiper.builder(
@@ -145,38 +143,40 @@ class _HomePageState extends State<HomePage> {
                   );
                 },
               )),
-                  Align(alignment: Alignment.center,
-                      child: radios.length > 0
-                          ? VxSwiper.builder(
-                          height: height*0.6,
-                          itemCount: radios.length,
-                          aspectRatio: 1.0,
-                          enlargeCenterPage: true,
-                          onPageChanged: (index) {
-                            setState(() {
-                              selectedRadio = radios[index];
-                            _playMusic(selectedRadio.url, radios, selectedRadio);
-                            });
-                          },
-                          itemBuilder: (context, index) {
-                            final rad = radios[index];
-                            print(rad);
-                            return Column(children: [
-                            ClipPage(
-                                url: rad.image,
-                                width: width * 0.9,
-                                height: width * 0.9,
-                                redcolor: red,
-                                id: rad.blobid,
-                                idback: rad.idback,
-                                greencolor: green),
-                              SizedBox(height:20),
-                              Align(alignment: Alignment.center,
-                                  child:  Image.network(rad.text, width: width/3, fit: BoxFit.fitWidth))]);
-                          })
-                          : Center(
-                        child: CircularProgressIndicator(color: green),
-                      )),
+          Align(
+              alignment: Alignment.center,
+              child: radios.length > 0
+                  ? VxSwiper.builder(
+                  height: width * 0.9,
+                  itemCount: radios!.length,
+                  aspectRatio: 1.0,
+                  enlargeCenterPage: true,
+                  onPageChanged: (index) {
+                    blobCtrl.change();
+                    _selectedRadio = radios![index];
+                    _audioPlayer.pause();
+                    _playMusic(_selectedRadio!.url);
+                    songs.doc(_info1).update(<String, dynamic>{
+                      'Streams': FieldValue.increment(1),
+                    });
+                    getInfo();
+                    setState(() {});
+                  },
+                  itemBuilder: (context, index) {
+                    final rad = radios![index];
+                    print(rad);
+                    return ClipPage(
+                        url: rad.image,
+                        width: width * 0.9,
+                        height: width * 0.9,
+                        redcolor: red,
+                        id: rad.blobid,
+                        idback: rad.idback,
+                        greencolor: green);
+                  })
+                  : Center(
+                child: CircularProgressIndicator(color: green),
+              )),
         ]),
         floatingActionButton: FloatingActionButton(
           mini: true,
@@ -193,8 +193,8 @@ class _HomePageState extends State<HomePage> {
             if (isplaying) {
               _audioPlayer.pause();
             } else {
-              if (selectedRadio != null) {
-                _playMusic(selectedRadio.url, radios, selectedRadio);
+              if (_selectedRadio != null) {
+                _playMusic(_selectedRadio!.url);
               }
             }
           }),
@@ -216,24 +216,13 @@ class _HomePageState extends State<HomePage> {
             });
             navigateToPage(_bottomNavIndex);
           },
-        )) : Center(
-          child: CircularProgressIndicator(color: green,  backgroundColor: white),
-          );
-    }
-          else{
-            return Scaffold(
-            backgroundColor: white,
-                body: Center(
-              child: CircularProgressIndicator(color: green),
-            ));
-          }});}
+        ));
+  }
 
-  void getInfo(selectedRadio) {
+  void getInfo() {
     setState(() {
       print(metadata);
-      if (selectedRadio != false){
-        print(selectedRadio.category);
-        _category = selectedRadio.category;}
+      //
       if (metadata?[1] != null) {
         _info = metadata?[1].split("[")[0] ?? 'x';
       }

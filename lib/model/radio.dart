@@ -7,6 +7,8 @@ class MyRadio {
   final String url;
   final String category;
   final String image;
+  final String text;
+
   MyRadio({
     required this.blobid,
     required this.idback,
@@ -15,6 +17,7 @@ class MyRadio {
     required this.url,
     required this.category,
     required this.image,
+    required this.text,
   });
 
   factory MyRadio.fromMap(Map<String, dynamic> map) {
@@ -25,7 +28,8 @@ class MyRadio {
       category: map['category'],
       image: map['image'],
       blobid: map['id'],
-      idback : map['idback']
+      idback : map['idback'],
+      text: map['text'],
     );
   }
 
@@ -39,7 +43,8 @@ class MyRadio {
         o.order == order &&
         o.url == url &&
         o.category == category &&
-        o.image == image;
+        o.image == image &&
+        o.text == text;
   }
 
   @override
@@ -50,6 +55,7 @@ class MyRadio {
         category.hashCode ^
         blobid.hashCode ^
         image.hashCode ^
-        idback.hashCode ;
+        text.hashCode ^
+        idback.hashCode  ;
   }
 }
