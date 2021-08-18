@@ -20,7 +20,7 @@ class _ClipPageState extends State<ClipPage> {
       children: [
         Blob.fromID(
           id: [widget.idback],
-          size: widget.width*0.95,
+          size: widget.width,
           styles: BlobStyles(
             gradient: LinearGradient(begin: Alignment.bottomRight, end: Alignment.bottomLeft,
                 colors: [widget.greencolor, widget.redcolor])
@@ -29,12 +29,12 @@ class _ClipPageState extends State<ClipPage> {
         ),
         Container(
           // color: Colors.red,
-          width: widget.width*0.9,
+          width: widget.width*0.95,
           child: ClipPath(
             clipper: BlobClipper(id: widget.id),
             child: Image.network(
               widget.url, alignment: Alignment.center,
-              height: widget.height*0.9, width: widget.width, fit: BoxFit.fill,
+              height: widget.height, width: widget.width, fit: BoxFit.fill,
             ),
           ),
         ),

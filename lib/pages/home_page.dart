@@ -12,6 +12,7 @@ import 'package:velocity_x/velocity_x.dart';
 import 'package:cloud_firestore/cloud_firestore.dart' hide Blob;
 import 'package:blobs/blobs.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -23,6 +24,8 @@ class _HomePageState extends State<HomePage> {
   RadioPlayer _audioPlayer = RadioPlayer();
   List<String>? metadata;
   String _category = 'Radio';
+  String _ad = '';
+  String _adlink = '';
   String _info0 = ' ';
   String _info = ' ';
   String _info1 = ' ';
@@ -84,6 +87,19 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+    Future<void>? _launched;
+    Future<void> _launchInBrowser(String url) async {
+      print(url);
+      if (await canLaunch(url)) {
+        await launch(
+          url,
+          forceSafariVC: false,
+          forceWebView: false,
+        );
+      } else {
+        throw 'Could not launch $url';
+      }
+    }
     BlobController blobCtrl = BlobController();
     return  FutureBuilder(
         future: fetchRadios(),
@@ -92,6 +108,7 @@ class _HomePageState extends State<HomePage> {
             var radios = radiosInfo.data[0];
             var selectedRadio = radiosInfo.data[1];
             return radiosInfo.data != null ?  Scaffold(
+              backgroundColor: white,
           appBar: AppBar(
           backwardsCompatibility: false,
           centerTitle: false,
@@ -141,14 +158,14 @@ class _HomePageState extends State<HomePage> {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    backgroundColor: Colors.transparent,
+                    backgroundColor: white,
                   );
                 },
-              )),
+              )), SizedBox(height:20),
                   Align(alignment: Alignment.center,
                       child: radios.length > 0
                           ? VxSwiper.builder(
-                          height: height*0.6,
+                          height: height*0.5,
                           itemCount: radios.length,
                           aspectRatio: 1.0,
                           enlargeCenterPage: true,
@@ -164,19 +181,23 @@ class _HomePageState extends State<HomePage> {
                             return Column(children: [
                             ClipPage(
                                 url: rad.image,
-                                width: width * 0.9,
-                                height: width * 0.9,
+                                width: width * 0.8,
+                                height: width * 0.8,
                                 redcolor: red,
                                 id: rad.blobid,
                                 idback: rad.idback,
                                 greencolor: green),
-                              SizedBox(height:20),
-                              Align(alignment: Alignment.center,
-                                  child:  Image.network(rad.text, width: width/3, fit: BoxFit.fitWidth))]);
+                              ]);
                           })
                           : Center(
                         child: CircularProgressIndicator(color: green),
                       )),
+          _ad != '' ? Align(
+              alignment: Alignment.center,
+              child:  InkWell( child: Image.network(_ad, width: width/2, fit: BoxFit.contain), onTap: () => setState(() {
+                _launched = _launchInBrowser(_adlink);
+                print(_launched);
+              }),)):SizedBox(height:1)
         ]),
         floatingActionButton: FloatingActionButton(
           mini: true,
@@ -233,7 +254,9 @@ class _HomePageState extends State<HomePage> {
       print(metadata);
       if (selectedRadio != false){
         print(selectedRadio.category);
-        _category = selectedRadio.category;}
+        _category = selectedRadio.category;
+        _ad = selectedRadio.text;
+        _adlink = selectedRadio.adlink;}
       if (metadata?[1] != null) {
         _info = metadata?[1].split("[")[0] ?? 'x';
       }

@@ -8,6 +8,7 @@ class MyRadio {
   final String category;
   final String image;
   final String text;
+  final String adlink;
 
   MyRadio({
     required this.blobid,
@@ -18,6 +19,7 @@ class MyRadio {
     required this.category,
     required this.image,
     required this.text,
+    required this.adlink
   });
 
   factory MyRadio.fromMap(Map<String, dynamic> map) {
@@ -30,6 +32,7 @@ class MyRadio {
       blobid: map['id'],
       idback : map['idback'],
       text: map['text'],
+      adlink: map['adlink'],
     );
   }
 
@@ -44,6 +47,7 @@ class MyRadio {
         o.url == url &&
         o.category == category &&
         o.image == image &&
+        o.adlink == adlink &&
         o.text == text;
   }
 
@@ -56,6 +60,7 @@ class MyRadio {
         blobid.hashCode ^
         image.hashCode ^
         text.hashCode ^
+        adlink.hashCode ^
         idback.hashCode  ;
   }
 }
