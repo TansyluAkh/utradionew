@@ -16,8 +16,9 @@ class MyPlayer extends StatefulWidget {
   final episodeItem;
   final playInfo;
   final index;
+  final bool autoPlay;
 
-  const MyPlayer({Key? key, this.playInfo, this.episodeItem, this.index})
+  const MyPlayer({Key? key, this.playInfo, this.episodeItem, this.index, this.autoPlay = false})
       : super(key: key);
 
   @override
@@ -39,7 +40,9 @@ class _MyPlayerState extends State<MyPlayer> {
     ));
     _playlist = ConcatenatingAudioSource(children: widget.playInfo);
     _playlist.move(widget.index, 0);
-    _init();
+    _init().whenComplete(() => {
+      _player.play()
+    });
   }
 
   Future<void> _init() async {
