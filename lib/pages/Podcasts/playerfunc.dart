@@ -45,7 +45,10 @@ class _MyPlayerState extends State<MyPlayer> {
     ));
     _playlist = ConcatenatingAudioSource(children: widget.playInfo);
     _playlist.move(widget.index, 0);
-    _init().whenComplete(() => {_player.play()});
+    _init().whenComplete(() {
+      if (widget.autoPlay)
+        _player.play();
+    });
   }
 
   Future<void> _init() async {
