@@ -19,7 +19,12 @@ class MyPlayer extends StatefulWidget {
   final int index;
   final bool autoPlay;
 
-  const MyPlayer({Key? key, required this.playInfo, required this.episodeItem, required this.index, this.autoPlay = false})
+  const MyPlayer(
+      {Key? key,
+      required this.playInfo,
+      required this.episodeItem,
+      required this.index,
+      this.autoPlay = false})
       : super(key: key);
 
   @override
@@ -33,7 +38,6 @@ class _MyPlayerState extends State<MyPlayer> {
 
   @override
   void initState() {
-
     super.initState();
     _player = AudioPlayer();
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -41,17 +45,14 @@ class _MyPlayerState extends State<MyPlayer> {
     ));
     _playlist = ConcatenatingAudioSource(children: widget.playInfo);
     _playlist.move(widget.index, 0);
-    _init().whenComplete(() => {
-      _player.play()
-    });
+    _init().whenComplete(() => {_player.play()});
   }
 
   Future<void> _init() async {
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.speech());
     // Listen to errors during playback.
-    _player.playbackEventStream.listen((event) {},
-        onError: (Object e, StackTrace stackTrace) {
+    _player.playbackEventStream.listen((event) {}, onError: (Object e, StackTrace stackTrace) {
       print('A stream error occurred: $e');
     });
     try {
@@ -74,8 +75,8 @@ class _MyPlayerState extends State<MyPlayer> {
           _player.positionStream,
           _player.bufferedPositionStream,
           _player.durationStream,
-          (position, bufferedPosition, duration) => PositionData(
-              position, bufferedPosition, duration ?? Duration.zero));
+          (position, bufferedPosition, duration) =>
+              PositionData(position, bufferedPosition, duration ?? Duration.zero));
 
   @override
   Widget build(BuildContext context) {
@@ -94,6 +95,7 @@ class _MyPlayerState extends State<MyPlayer> {
         throw 'Could not launch $url';
       }
     }
+
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
@@ -138,25 +140,36 @@ class _MyPlayerState extends State<MyPlayer> {
                             ),
                           ),
                           Align(
-                            alignment: Alignment.center,
-                            child:  TextButton.icon(
-                              style: TextButton.styleFrom(
-                                  backgroundColor: white,
-                                  shape: const RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(25))),
-                                  minimumSize:
-                                  Size(height * 0.03, width * 0.1)),
-                              label: Text(' '+ metadata.album!,
-                                  style: Theme.of(context).textTheme.headline6!.copyWith(color:darkgreen, fontSize: 18)),
-                              icon: Icon(FontAwesomeIcons.externalLinkAlt, size: height*0.03, color: darkgreen),
-                              onPressed: () => setState(() {
-                                _launched = _launchInBrowser(widget.episodeItem.social);
-                                print(_launched);
-                              }),)),
+                              alignment: Alignment.center,
+                              child: TextButton.icon(
+                                style: TextButton.styleFrom(
+                                    backgroundColor: white,
+                                    shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(Radius.circular(25))),
+                                    minimumSize: Size(height * 0.03, width * 0.1)),
+                                label: Text(' ' + metadata.album!,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6!
+                                        .copyWith(color: darkgreen, fontSize: 18)),
+                                icon: Icon(FontAwesomeIcons.externalLinkAlt,
+                                    size: height * 0.03, color: darkgreen),
+                                onPressed: () => setState(() {
+                                  _launched = _launchInBrowser(widget.episodeItem.social);
+                                  print(_launched);
+                                }),
+                              )),
                           SizedBox(height: 20),
-                          Text(metadata.title,
-                              style: Theme.of(context).textTheme.subtitle1),
+                          SizedBox(
+                            height: 100,
+                            child: Center(
+                              child: SingleChildScrollView(
+                                child: Text(metadata.title,
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context).textTheme.subtitle1),
+                              ),
+                            ),
+                          ),
                           SizedBox(height: 10),
                         ]);
                   }),
@@ -168,8 +181,7 @@ class _MyPlayerState extends State<MyPlayer> {
                   return SeekBar(
                     duration: positionData?.duration ?? Duration.zero,
                     position: positionData?.position ?? Duration.zero,
-                    bufferedPosition:
-                        positionData?.bufferedPosition ?? Duration.zero,
+                    bufferedPosition: positionData?.bufferedPosition ?? Duration.zero,
                     onChangeEnd: (newPosition) {
                       _player.seek(newPosition);
                     },
@@ -190,23 +202,19 @@ class ControlButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery
-        .of(context)
-        .size
-        .height;
+    double height = MediaQuery.of(context).size.height;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       mainAxisSize: MainAxisSize.max,
       children: [
         StreamBuilder<SequenceState?>(
           stream: player.sequenceStateStream,
-          builder: (context, snapshot) =>
-              IconButton(
-                iconSize: height * 0.03,
-                color: black.withOpacity(0.8),
-                icon: Icon(FontAwesomeIcons.stepBackward),
-                onPressed: player.hasPrevious ? player.seekToPrevious : null,
-              ),
+          builder: (context, snapshot) => IconButton(
+            iconSize: height * 0.03,
+            color: black.withOpacity(0.8),
+            icon: Icon(FontAwesomeIcons.stepBackward),
+            onPressed: player.hasPrevious ? player.seekToPrevious : null,
+          ),
         ),
         StreamBuilder<PlayerState>(
           stream: player.playerStateStream,
@@ -241,22 +249,19 @@ class ControlButtons extends StatelessWidget {
                 icon: Icon(FontAwesomeIcons.play),
                 iconSize: height * 0.03,
                 color: black.withOpacity(0.8),
-                onPressed: () =>
-                    player.seek(Duration.zero,
-                        index: player.effectiveIndices!.first),
+                onPressed: () => player.seek(Duration.zero, index: player.effectiveIndices!.first),
               );
             }
           },
         ),
         StreamBuilder<SequenceState?>(
           stream: player.sequenceStateStream,
-          builder: (context, snapshot) =>
-              IconButton(
-                icon: Icon(FontAwesomeIcons.stepForward),
-                iconSize: height * 0.03,
-                color: black.withOpacity(0.8),
-                onPressed: player.hasNext ? player.seekToNext : null,
-              ),
+          builder: (context, snapshot) => IconButton(
+            icon: Icon(FontAwesomeIcons.stepForward),
+            iconSize: height * 0.03,
+            color: black.withOpacity(0.8),
+            onPressed: player.hasNext ? player.seekToNext : null,
+          ),
         ),
       ],
     );
