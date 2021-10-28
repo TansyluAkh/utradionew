@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:ut_radio/model/Podcasts/episode.dart';
 import 'package:ut_radio/pages/playermath.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -13,12 +14,12 @@ import 'package:ut_radio/pages/Podcasts/createblob.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyPlayer extends StatefulWidget {
-  final episodeItem;
-  final playInfo;
-  final index;
+  final Episode episodeItem;
+  final List<AudioSource> playInfo;
+  final int index;
   final bool autoPlay;
 
-  const MyPlayer({Key? key, this.playInfo, this.episodeItem, this.index, this.autoPlay = false})
+  const MyPlayer({Key? key, required this.playInfo, required this.episodeItem, required this.index, this.autoPlay = false})
       : super(key: key);
 
   @override

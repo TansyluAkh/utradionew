@@ -21,7 +21,7 @@ class CardGrid extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                           builder: (context) => MyPlayer(
-                              episodeItem: episodeItem, playInfo: playInfo, index: index)));
+                              episodeItem: episodeItem, playInfo: List.from(playInfo), index: index)));
                 },
                 child: Card(
                   elevation: 6.0,
@@ -98,7 +98,7 @@ class CardGrid extends StatelessWidget {
                                     MaterialPageRoute(
                                         builder: (context) => MyPlayer(
                                             episodeItem: episodeItem,
-                                            playInfo: playInfo,
+                                            playInfo: List.from(playInfo),
                                             index: index,
                                         autoPlay: true,)));
                               },
