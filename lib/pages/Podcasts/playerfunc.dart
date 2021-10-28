@@ -43,8 +43,7 @@ class _MyPlayerState extends State<MyPlayer> {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.black,
     ));
-    _playlist = ConcatenatingAudioSource(children: widget.playInfo);
-    _playlist.move(widget.index, 0);
+    _playlist = ConcatenatingAudioSource(children: widget.playInfo.sublist(widget.index));
     _init().whenComplete(() {
       if (widget.autoPlay)
         _player.play();
