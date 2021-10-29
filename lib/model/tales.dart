@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:just_audio/just_audio.dart';
 
-class Episode {
-
+class TaleEpisode {
   final String episodenum;
   final String id;
   final String idback;
@@ -14,7 +13,7 @@ class Episode {
   final String actor;
   final String social;
 
-  Episode(
+  TaleEpisode(
       {Key? key,
       required this.social,
       required this.episodenum,
@@ -24,6 +23,14 @@ class Episode {
       required this.author,
       required this.audio,
       required this.image});
+}
+
+class TaleSeries {
+  final String title;
+  final String imageUrl;
+  final String collection;
+
+  TaleSeries({required this.title, required this.imageUrl, required this.collection});
 }
 
 Future<List<Object>> getTaleEpisodesData(name) async {
@@ -45,7 +52,7 @@ Future<List<Object>> getTaleEpisodesData(name) async {
           artUri: Uri.parse(data!['image'].toString()),
         ));
     playlist.add(song);
-    Episode episodeItem = Episode(
+    TaleEpisode episodeItem = TaleEpisode(
         audio: data!['audio'].toString(),
         episodenum: data!['name'].toString(),
         social: data!['social'].toString(),
@@ -57,4 +64,20 @@ Future<List<Object>> getTaleEpisodesData(name) async {
     arr.add(episodeItem);
   });
   return [arr, playlist];
+}
+
+Future<List<TaleSeries>> getTaleSeries() async {
+  CollectionReference series = FirebaseFirestore.instance.collection('booksandsongs');
+  QuerySnapshot querySnapshot = await series.get();
+
+  final result = querySnapshot.docs.map((element) {
+    Map<String, dynamic> data = element.data() as Map<String, dynamic>;
+    return TaleSeries(
+      collection: data['collection'].toString(),
+      title: data['name'].toString(),
+      imageUrl: data['image'].toString(),
+    );
+  });
+
+  return result.toList();
 }

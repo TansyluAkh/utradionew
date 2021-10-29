@@ -1,16 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ut_radio/model/tales.dart';
 import 'package:ut_radio/pages/constants.dart';
-import 'package:ut_radio/model/Tales/series.dart';
+import 'package:ut_radio/pages/shared/series_card.dart';
 import 'package:velocity_x/velocity_x.dart';
+
+import 'episode_library.dart';
 
 class TalesLibrary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height - kToolbarHeight - 24;
-    final double itemHeight = height/ 2;
-    final double itemWidth = width / 3;
     return Scaffold(
         appBar: AppBar(
           iconTheme: IconThemeData(
@@ -30,25 +29,38 @@ class TalesLibrary extends StatelessWidget {
           elevation: 0,
         ),
         body: new SingleChildScrollView(
-            child:  FutureBuilder(
-              future: getTaleSeriesWidget(),
-                    builder: (BuildContext context, AsyncSnapshot text) {
-                      return text.data != null ?
-                       GridView.builder(
-                      padding: EdgeInsets.all(10.0),
-                      shrinkWrap: true,
+            child: FutureBuilder(
+                future: getTaleSeries(),
+                builder: (BuildContext context, AsyncSnapshot text) {
+                  return text.data != null
+                      ? GridView.builder(
+                          padding: EdgeInsets.all(10.0),
+                          shrinkWrap: true,
                           physics: ScrollPhysics(),
-                      scrollDirection: Axis.vertical,
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        mainAxisSpacing: 10,
-                        crossAxisSpacing: 10,crossAxisCount: 2,
-                      ),
-                      itemCount: text!.data.length,
-                      itemBuilder: (BuildContext ctx, index) {
-                      return text!.data[index];
-                      }):Center(child:CircularProgressIndicator(
-                      backgroundColor: Colors.white,
-                      color: green,
-                      ));
-              })));
-}}
+                          scrollDirection: Axis.vertical,
+                          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            mainAxisSpacing: 10,
+                            crossAxisSpacing: 10,
+                            crossAxisCount: 2,
+                          ),
+                          itemCount: text.data.length,
+                          itemBuilder: (BuildContext ctx, index) {
+                            final data = text.data[index];
+                            return SeriesCard(
+                                title: data.title,
+                                image: data.imageUrl,
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Episodes(name: data.collection)));
+                                });
+                          })
+                      : Center(
+                          child: CircularProgressIndicator(
+                          backgroundColor: Colors.white,
+                          color: green,
+                        ));
+                })));
+  }
+}

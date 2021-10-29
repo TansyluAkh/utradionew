@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:ut_radio/model/podcasts.dart';
 import 'package:ut_radio/pages/constants.dart';
-import 'package:ut_radio/model/Podcasts/series.dart';
+import 'package:ut_radio/pages/shared/series_card.dart';
 import 'package:velocity_x/velocity_x.dart';
+
+import 'episode_library.dart';
 
 class PodcastsLibrary extends StatelessWidget {
   @override
@@ -27,7 +30,7 @@ class PodcastsLibrary extends StatelessWidget {
         ),
         body: SingleChildScrollView(
             child: FutureBuilder(
-                future: getPodcastSeriesWidget(),
+                future: getPodcastSeries(),
                 builder: (BuildContext context, AsyncSnapshot text) {
                   return text.data != null
                       ? GridView.builder(
@@ -42,7 +45,17 @@ class PodcastsLibrary extends StatelessWidget {
                           ),
                           itemCount: text!.data.length,
                           itemBuilder: (BuildContext ctx, index) {
-                            return text!.data[index];
+                            final data = text.data[index];
+                            return SeriesCard(
+                              title: data.title,
+                              image: data.imageUrl,
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Episodes(name: data.title)));
+                              },
+                            );
                           })
                       : Center(
                           child: CircularProgressIndicator(

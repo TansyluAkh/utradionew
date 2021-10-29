@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:ut_radio/model/podcasts.dart';
 import 'package:ut_radio/pages/shared/episode_card.dart';
 import 'package:ut_radio/pages/shared/player_screen.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:ut_radio/pages/constants.dart';
-import 'package:ut_radio/model/Podcasts/episode.dart';
 
 class Episodes extends StatefulWidget {
   final name;

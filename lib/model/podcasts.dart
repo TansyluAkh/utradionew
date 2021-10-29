@@ -29,6 +29,13 @@ class PodcastEpisode {
       required this.series});
 }
 
+class PodcastSeries {
+  final String title;
+  final String imageUrl;
+
+  PodcastSeries({required this.title, required this.imageUrl});
+}
+
 Future<List<Object>> getPodcastEpisodesData(name) async {
   CollectionReference podcasts = FirebaseFirestore.instance.collection(name);
   CollectionReference blobs = FirebaseFirestore.instance.collection('blobs');
@@ -64,4 +71,16 @@ Future<List<Object>> getPodcastEpisodesData(name) async {
     print(value);
   });
   return [arr, playlist];
+}
+
+Future<List<PodcastSeries>> getPodcastSeries() async {
+  CollectionReference series = FirebaseFirestore.instance.collection('series');
+  QuerySnapshot querySnapshot = await series.get();
+
+  final result = querySnapshot.docs.map((element) {
+    Map<String, dynamic> data = element.data() as Map<String, dynamic>;
+    return PodcastSeries(title: data['name'].toString(), imageUrl: data['image'].toString());
+  });
+
+  return result.toList();
 }

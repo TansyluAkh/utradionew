@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:ut_radio/model/tales.dart';
 import 'package:ut_radio/pages/shared/episode_card.dart';
 import 'package:ut_radio/pages/shared/player_screen.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:ut_radio/pages/constants.dart';
-import 'package:ut_radio/model/Tales/episode.dart';
 
 class Episodes extends StatefulWidget {
   final name;
@@ -15,8 +15,7 @@ class Episodes extends StatefulWidget {
 class _EpisodesState extends State<Episodes> {
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    print('Episodes here');
     return Scaffold(
         appBar: AppBar(
           iconTheme: IconThemeData(
@@ -49,9 +48,9 @@ class _EpisodesState extends State<Episodes> {
                             final episodeItem = text.data[0][index];
                             final playInfo = text.data[1];
                             return EpisodeCard(
-                              header: episodeItem.date,
+                              header: episodeItem.author,
                               title: episodeItem.episodenum,
-                              description: episodeItem.episode,
+                              description: episodeItem.actor,
                               imageUrl: episodeItem.image,
                               onTap: () {
                                 Navigator.push(

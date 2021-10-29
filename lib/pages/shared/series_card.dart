@@ -1,18 +1,13 @@
 ﻿import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ut_radio/pages/constants.dart';
-import 'package:ut_radio/pages/Podcasts/episode_library.dart';
 
 class SeriesCard extends StatelessWidget {
   final String image;
   final String title;
-  final String episodeName;
+  final VoidCallback onTap;
 
-  SeriesCard({
-    required this.title,
-    required this.image,
-    required this.episodeName,
-  });
+  SeriesCard({required this.title, required this.image, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +15,7 @@ class SeriesCard extends StatelessWidget {
         child: Padding(
             padding: EdgeInsets.all(10.0),
             child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => Episodes(name: episodeName)));
-                },
+                onTap: onTap,
                 child: Stack(
                   children: [
                     ClipRRect(
