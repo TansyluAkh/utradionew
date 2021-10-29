@@ -31,7 +31,7 @@ class TalesLibrary extends StatelessWidget {
         ),
         body: new SingleChildScrollView(
             child:  FutureBuilder(
-              future: getSeriesData(),
+              future: getTaleSeriesWidget(),
                     builder: (BuildContext context, AsyncSnapshot text) {
                       return text.data != null ?
                        GridView.builder(

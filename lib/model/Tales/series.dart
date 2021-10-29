@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:ut_radio/pages/Tales/seriescard.dart';
 
-Future<List<SeriesGrid>> getSeriesData() async {
+Future<List<SeriesGrid>> getTaleSeriesWidget() async {
   CollectionReference Series = FirebaseFirestore.instance.collection('booksandsongs');
   List<SeriesGrid> arr = [];
   QuerySnapshot querySnapshot = await Series.get();

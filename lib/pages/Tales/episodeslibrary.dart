@@ -42,7 +42,7 @@ class _EpisodesState extends State<Episodes> {
     body:
       SingleChildScrollView(
           child:  FutureBuilder(
-          future: getEpisodesData(widget.name),
+          future: getTaleEpisodesData(widget.name),
           builder: (BuildContext context, AsyncSnapshot text) {
     return text.data != null ?
           ListView.builder(

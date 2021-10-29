@@ -26,7 +26,7 @@ class Episode {
       required this.image});
 }
 
-Future<List<Object>> getEpisodesData(name) async {
+Future<List<Object>> getTaleEpisodesData(name) async {
   CollectionReference podcasts = FirebaseFirestore.instance.collection(name);
   CollectionReference blobs = FirebaseFirestore.instance.collection('blobs');
   var q = await blobs.doc('tales').get();

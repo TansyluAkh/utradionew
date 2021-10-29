@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:just_audio/just_audio.dart';
 
-class Episode {
+class PodcastEpisode {
   final String episodenum;
   final String id;
   final String idback;
@@ -15,7 +15,7 @@ class Episode {
   final String social;
   final String description;
 
-  Episode(
+  PodcastEpisode(
       {Key? key,
       required this.social,
       required this.episodenum,
@@ -29,7 +29,7 @@ class Episode {
       required this.series});
 }
 
-Future<List<Object>> getEpisodesData(name) async {
+Future<List<Object>> getPodcastEpisodesData(name) async {
   CollectionReference podcasts = FirebaseFirestore.instance.collection(name);
   CollectionReference blobs = FirebaseFirestore.instance.collection('blobs');
   var q = await blobs.doc('episodes').get();
@@ -48,7 +48,7 @@ Future<List<Object>> getEpisodesData(name) async {
           artUri: Uri.parse(data['image'].toString()),
         ));
     playlist.add(song);
-    Episode episodeItem = Episode(
+    PodcastEpisode episodeItem = PodcastEpisode(
       audio: data['audio'].toString(),
       episodenum: data['episodenum'].toString(),
       social: data['social'].toString(),

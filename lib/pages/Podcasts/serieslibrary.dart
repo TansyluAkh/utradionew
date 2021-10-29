@@ -31,7 +31,7 @@ class PodcastsLibrary extends StatelessWidget {
         ),
         body: new SingleChildScrollView(
             child:  FutureBuilder(
-              future: getSeriesData(),
+              future: getPodcastSeriesWidget(),
                     builder: (BuildContext context, AsyncSnapshot text) {
                       return text.data != null ? GridView.builder(
                       padding: EdgeInsets.all(10.0),

@@ -14,7 +14,7 @@ import 'package:ut_radio/pages/Podcasts/createblob.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class MyPlayer extends StatefulWidget {
-  final Episode episodeItem;
+  final PodcastEpisode episodeItem;
   final List<AudioSource> playInfo;
   final int index;
   final bool autoPlay;
