@@ -2,9 +2,9 @@ import 'package:flutter/services.dart';
 import 'package:ut_radio/pages/my_flutter_app_icons.dart';
 import 'package:ut_radio/model/radio.dart';
 import 'package:radio_player/radio_player.dart';
-import 'package:ut_radio/pages/homeblob.dart';
-import 'package:ut_radio/pages/Podcasts/serieslibrary.dart';
-import 'package:ut_radio/pages/Tales/serieslibrary.dart';
+import 'package:ut_radio/pages/home_blob.dart';
+import 'package:ut_radio/pages/Podcasts/series_library.dart';
+import 'package:ut_radio/pages/Tales/series_library.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:ut_radio/pages/constants.dart';
 import 'package:flutter/material.dart';
@@ -179,14 +179,14 @@ class _HomePageState extends State<HomePage> {
                             final rad = radios[index];
                             print(rad);
                             return Column(children: [
-                            ClipPage(
+                            HomeBlob(
                                 url: rad.image,
                                 width: width * 0.8,
                                 height: width * 0.8,
-                                redcolor: red,
+                                redColor: red,
                                 id: rad.blobid,
                                 idback: rad.idback,
-                                greencolor: green),
+                                greenColor: green),
                               ]);
                           })
                           : Center(

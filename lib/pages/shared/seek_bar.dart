@@ -95,9 +95,7 @@ class _SeekBarState extends State<SeekBar> {
           right: 16.0,
           bottom: 0.0,
           child: Text(
-              RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$')
-                  .firstMatch("$_remaining")
-                  ?.group(1) ??
+              RegExp(r'((^0*[1-9]\d*:)?\d{2}:\d{2})\.\d+$').firstMatch("$_remaining")?.group(1) ??
                   '$_remaining',
               style: Theme.of(context).textTheme.caption),
         ),
@@ -114,65 +112,18 @@ class HiddenThumbComponentShape extends SliderComponentShape {
 
   @override
   void paint(
-      PaintingContext context,
-      Offset center, {
-        required Animation<double> activationAnimation,
-        required Animation<double> enableAnimation,
-        required bool isDiscrete,
-        required TextPainter labelPainter,
-        required RenderBox parentBox,
-        required SliderThemeData sliderTheme,
-        required TextDirection textDirection,
-        required double value,
-        required double textScaleFactor,
-        required Size sizeWithOverflow,
-      }) {}
+    PaintingContext context,
+    Offset center, {
+    required Animation<double> activationAnimation,
+    required Animation<double> enableAnimation,
+    required bool isDiscrete,
+    required TextPainter labelPainter,
+    required RenderBox parentBox,
+    required SliderThemeData sliderTheme,
+    required TextDirection textDirection,
+    required double value,
+    required double textScaleFactor,
+    required Size sizeWithOverflow,
+  }) {}
 }
 
-class PositionData {
-  final Duration position;
-  final Duration bufferedPosition;
-  final Duration duration;
-
-  PositionData(this.position, this.bufferedPosition, this.duration);
-}
-
-void showSliderDialog({
-  required BuildContext context,
-  required String title,
-  required int divisions,
-  required double min,
-  required double max,
-  String valueSuffix = '',
-  required Stream<double> stream,
-  required ValueChanged<double> onChanged,
-}) {
-  showDialog<void>(
-    context: context,
-    builder: (context) => AlertDialog(
-      title: Text(title, textAlign: TextAlign.center),
-      content: StreamBuilder<double>(
-        stream: stream,
-        builder: (context, snapshot) => Container(
-          height: 100.0,
-          child: Column(
-            children: [
-              Text('${snapshot.data?.toStringAsFixed(1)}$valueSuffix',
-                  style: TextStyle(
-                      fontFamily: 'Fixed',
-                      fontWeight: FontWeight.bold,
-                      fontSize: 24.0)),
-              Slider(
-                divisions: divisions,
-                min: min,
-                max: max,
-                value: snapshot.data ?? 1.0,
-                onChanged: onChanged,
-              ),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
-}

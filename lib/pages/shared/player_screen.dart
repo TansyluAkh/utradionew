@@ -1,3 +1,5 @@
+﻿import 'dart:ui';
+
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_session/audio_session.dart';
@@ -5,29 +7,33 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'package:ut_radio/pages/playermath.dart';
+import 'package:ut_radio/pages/shared/seek_bar.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:ut_radio/pages/constants.dart';
-import 'package:ut_radio/pages/Podcasts/createblob.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class MyPlayer extends StatefulWidget {
-  final episodeItem;
-  final playInfo;
-  final index;
+class PlayerScreen extends StatefulWidget {
+  final String link;
+  final List<AudioSource> playInfo;
+  final int index;
+  final bool autoPlay;
 
-  const MyPlayer({Key? key, this.playInfo, this.episodeItem, this.index})
+  const PlayerScreen(
+      {Key? key,
+      required this.playInfo,
+      required this.link,
+      required this.index,
+      this.autoPlay = false})
       : super(key: key);
 
   @override
-  _MyPlayerState createState() => _MyPlayerState();
+  _PlayerScreenState createState() => _PlayerScreenState();
 }
 
-class _MyPlayerState extends State<MyPlayer> {
+class _PlayerScreenState extends State<PlayerScreen> {
   late AudioPlayer _player;
   late ConcatenatingAudioSource _playlist;
-  int _addedCount = 0;
 
   @override
   void initState() {
@@ -36,23 +42,21 @@ class _MyPlayerState extends State<MyPlayer> {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.black,
     ));
-    _playlist = ConcatenatingAudioSource(children: widget.playInfo);
-    _playlist.move(widget.index, 0);
-    _init();
+    _playlist = ConcatenatingAudioSource(children: widget.playInfo.sublist(widget.index));
+    _init().whenComplete(() {
+      if (widget.autoPlay) _player.play();
+    });
   }
 
   Future<void> _init() async {
     final session = await AudioSession.instance;
     await session.configure(AudioSessionConfiguration.speech());
-    // Listen to errors during playback.
-    _player.playbackEventStream.listen((event) {},
-        onError: (Object e, StackTrace stackTrace) {
-          print('A stream error occurred: $e');
-        });
+    _player.playbackEventStream.listen((event) {}, onError: (Object e, StackTrace stackTrace) {
+      print('A stream error occurred: $e');
+    });
     try {
       await _player.setAudioSource(_playlist);
     } catch (e, stackTrace) {
-      // Catch load errors: 404, invalid url ...
       print("Error loading playlist: $e");
       print(stackTrace);
     }
@@ -69,8 +73,8 @@ class _MyPlayerState extends State<MyPlayer> {
           _player.positionStream,
           _player.bufferedPositionStream,
           _player.durationStream,
-              (position, bufferedPosition, duration) => PositionData(
-              position, bufferedPosition, duration ?? Duration.zero));
+          (position, bufferedPosition, duration) =>
+              PositionData(position, bufferedPosition, duration ?? Duration.zero));
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +82,7 @@ class _MyPlayerState extends State<MyPlayer> {
     double height = MediaQuery.of(context).size.height;
     Future<void>? _launched;
     Future<void> _launchInBrowser(String url) async {
+      print(url);
       if (await canLaunch(url)) {
         await launch(
           url,
@@ -88,11 +93,12 @@ class _MyPlayerState extends State<MyPlayer> {
         throw 'Could not launch $url';
       }
     }
+
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           iconTheme: IconThemeData(
-            color: Colors.black, //change your color here
+            color: Colors.black,
           ),
           centerTitle: false,
           titleSpacing: 0.0,
@@ -100,9 +106,7 @@ class _MyPlayerState extends State<MyPlayer> {
               style: const TextStyle(
                 fontSize: 20,
               )).shimmer(primaryColor: red, secondaryColor: green),
-
           backgroundColor: Colors.transparent,
-          // Colors.white.withOpacity(0.1),
           elevation: 0,
         ),
         body: SafeArea(
@@ -123,12 +127,10 @@ class _MyPlayerState extends State<MyPlayer> {
                         children: [
                           Padding(
                             padding: EdgeInsets.only(bottom: 35),
-                            child: ClipPage(
+                            child: PlayerImage(
                               url: metadata.artUri.toString(),
-                              height: height,
                               width: width,
-                              redcolor: green,
-                              greencolor: green,
+                              greenColor: green,
                             ),
                           ),
                           Align(
@@ -137,20 +139,31 @@ class _MyPlayerState extends State<MyPlayer> {
                                 style: TextButton.styleFrom(
                                     backgroundColor: white,
                                     shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(25))),
-                                    minimumSize:
-                                    Size(height * 0.03, width * 0.1)),
-                                label: Text(' '+ metadata.title!,
-                                    style: Theme.of(context).textTheme.headline6!.copyWith(color:darkgreen, fontSize: 18)),
-                                icon: Icon(FontAwesomeIcons.externalLinkAlt, size: height*0.03, color: darkgreen),
+                                        borderRadius: BorderRadius.all(Radius.circular(25))),
+                                    minimumSize: Size(height * 0.03, width * 0.1)),
+                                label: Text(' ' + metadata.album!,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline6!
+                                        .copyWith(color: darkgreen, fontSize: 18)),
+                                icon: Icon(FontAwesomeIcons.externalLinkAlt,
+                                    size: height * 0.03, color: darkgreen),
                                 onPressed: () => setState(() {
-                                  _launched = _launchInBrowser(widget.episodeItem.social);
+                                  _launched = _launchInBrowser(widget.link);
                                   print(_launched);
-                                }),)),
+                                }),
+                              )),
                           SizedBox(height: 20),
-                          Text( metadata.artist!,
-                              style: Theme.of(context).textTheme.subtitle1),
+                          SizedBox(
+                            height: 100,
+                            child: Center(
+                              child: SingleChildScrollView(
+                                child: Text(metadata.title,
+                                    textAlign: TextAlign.center,
+                                    style: Theme.of(context).textTheme.subtitle1),
+                              ),
+                            ),
+                          ),
                           SizedBox(height: 10),
                         ]);
                   }),
@@ -162,8 +175,7 @@ class _MyPlayerState extends State<MyPlayer> {
                   return SeekBar(
                     duration: positionData?.duration ?? Duration.zero,
                     position: positionData?.position ?? Duration.zero,
-                    bufferedPosition:
-                    positionData?.bufferedPosition ?? Duration.zero,
+                    bufferedPosition: positionData?.bufferedPosition ?? Duration.zero,
                     onChangeEnd: (newPosition) {
                       _player.seek(newPosition);
                     },
@@ -177,6 +189,48 @@ class _MyPlayerState extends State<MyPlayer> {
   }
 }
 
+class PlayerImage extends StatefulWidget {
+  final double width;
+  final String url;
+  final Color greenColor;
+
+  const PlayerImage({Key? key, required this.greenColor, required this.width, required this.url})
+      : super(key: key);
+
+  @override
+  _PlayerImageState createState() => _PlayerImageState();
+}
+
+class _PlayerImageState extends State<PlayerImage> {
+  @override
+  Widget build(BuildContext context) {
+    return Stack(alignment: Alignment.center, children: [
+      Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            image: DecorationImage(
+              image: NetworkImage(widget.url),
+              fit: BoxFit.cover,
+            )),
+        width: widget.width * 0.8,
+        height: widget.width * 0.8,
+        alignment: Alignment.center,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            decoration: BoxDecoration(
+                color: widget.greenColor.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+          ),
+        ),
+      ),
+      Align(
+          alignment: Alignment.center,
+          child: Image.network(widget.url,
+              width: widget.width * 0.6, fit: BoxFit.fill, alignment: Alignment.center)),
+    ]);
+  }
+}
+
 class ControlButtons extends StatelessWidget {
   final AudioPlayer player;
 
@@ -184,23 +238,19 @@ class ControlButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double height = MediaQuery
-        .of(context)
-        .size
-        .height;
+    double height = MediaQuery.of(context).size.height;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       mainAxisSize: MainAxisSize.max,
       children: [
         StreamBuilder<SequenceState?>(
           stream: player.sequenceStateStream,
-          builder: (context, snapshot) =>
-              IconButton(
-                iconSize: height * 0.03,
-                color: black.withOpacity(0.8),
-                icon: Icon(FontAwesomeIcons.stepBackward),
-                onPressed: player.hasPrevious ? player.seekToPrevious : null,
-              ),
+          builder: (context, snapshot) => IconButton(
+            iconSize: height * 0.03,
+            color: black.withOpacity(0.8),
+            icon: Icon(FontAwesomeIcons.stepBackward),
+            onPressed: player.hasPrevious ? player.seekToPrevious : null,
+          ),
         ),
         StreamBuilder<PlayerState>(
           stream: player.playerStateStream,
@@ -235,24 +285,29 @@ class ControlButtons extends StatelessWidget {
                 icon: Icon(FontAwesomeIcons.play),
                 iconSize: height * 0.03,
                 color: black.withOpacity(0.8),
-                onPressed: () =>
-                    player.seek(Duration.zero,
-                        index: player.effectiveIndices!.first),
+                onPressed: () => player.seek(Duration.zero, index: player.effectiveIndices!.first),
               );
             }
           },
         ),
         StreamBuilder<SequenceState?>(
           stream: player.sequenceStateStream,
-          builder: (context, snapshot) =>
-              IconButton(
-                icon: Icon(FontAwesomeIcons.stepForward),
-                iconSize: height * 0.03,
-                color: black.withOpacity(0.8),
-                onPressed: player.hasNext ? player.seekToNext : null,
-              ),
+          builder: (context, snapshot) => IconButton(
+            icon: Icon(FontAwesomeIcons.stepForward),
+            iconSize: height * 0.03,
+            color: black.withOpacity(0.8),
+            onPressed: player.hasNext ? player.seekToNext : null,
+          ),
         ),
       ],
     );
   }
+}
+
+class PositionData {
+  final Duration position;
+  final Duration bufferedPosition;
+  final Duration duration;
+
+  PositionData(this.position, this.bufferedPosition, this.duration);
 }

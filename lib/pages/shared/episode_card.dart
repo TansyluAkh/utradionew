@@ -1,14 +1,23 @@
-import 'package:flutter/cupertino.dart';
+﻿import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:ut_radio/pages/Podcasts/playerfunc.dart';
 import 'package:ut_radio/pages/constants.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class CardGrid extends StatelessWidget {
-  final episodeItem;
-  final playInfo;
-  final index;
-  CardGrid({required this.episodeItem, this.playInfo, this.index});
+class EpisodeCard extends StatelessWidget {
+  final String header;
+  final String title;
+  final String imageUrl;
+  final String description;
+  final VoidCallback onTap;
+  final VoidCallback onPlayTap;
+
+  EpisodeCard(
+      {required this.header,
+      required this.title,
+      required this.description,
+      required this.imageUrl,
+      required this.onTap,
+      required this.onPlayTap});
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +25,7 @@ class CardGrid extends StatelessWidget {
         child: Padding(
             padding: EdgeInsets.all(10.0),
             child: InkWell(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => MyPlayer(
-                              episodeItem: episodeItem, playInfo: List.from(playInfo), index: index)));
-                },
+                onTap: onTap,
                 child: Card(
                   elevation: 6.0,
                   shadowColor: green.withOpacity(.3),
@@ -45,7 +48,7 @@ class CardGrid extends StatelessWidget {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(12.0),
                             image: DecorationImage(
-                              image: NetworkImage(episodeItem.image),
+                              image: NetworkImage(imageUrl),
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -66,19 +69,19 @@ class CardGrid extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   child: Text(
-                                    episodeItem.date,
+                                    header,
                                     style: kFabStyle.copyWith(color: green),
                                   ),
                                 ),
                                 Spacer(),
                                 Text(
-                                  episodeItem.episodenum,
+                                  title,
                                   overflow: TextOverflow.ellipsis,
                                   style: kTitleStyle,
                                 ),
                                 Spacer(),
                                 Text(
-                                  episodeItem.episode,
+                                  description,
                                   overflow: TextOverflow.ellipsis,
                                   style: kSubtitleStyle,
                                 ),
@@ -92,16 +95,7 @@ class CardGrid extends StatelessWidget {
                             backgroundColor: green.withOpacity(.1),
                             child: IconButton(
                               color: green,
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => MyPlayer(
-                                            episodeItem: episodeItem,
-                                            playInfo: List.from(playInfo),
-                                            index: index,
-                                        autoPlay: true,)));
-                              },
+                              onPressed: onPlayTap,
                               icon: Icon(FontAwesomeIcons.play),
                             ),
                           ),
