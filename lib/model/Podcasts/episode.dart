@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:just_audio/just_audio.dart';
+
 class Episode {
   final String episodenum;
   final String id;
@@ -13,10 +14,20 @@ class Episode {
   final String series;
   final String social;
   final String description;
-  Episode({Key? key, required this.social, required this.episodenum, required this.episode, required this.id, required this.idback,  required this.audio, required this.image, required this.date, required this.description, required this.series});
 
+  Episode(
+      {Key? key,
+      required this.social,
+      required this.episodenum,
+      required this.episode,
+      required this.id,
+      required this.idback,
+      required this.audio,
+      required this.image,
+      required this.date,
+      required this.description,
+      required this.series});
 }
-
 
 Future<List<Object>> getEpisodesData(name) async {
   CollectionReference podcasts = FirebaseFirestore.instance.collection(name);
@@ -29,41 +40,28 @@ Future<List<Object>> getEpisodesData(name) async {
   final allData = querySnapshot.docs.forEach((element) {
     Map<String, dynamic>? data = element.data() as Map<String, dynamic>?;
     var value = data!['image'].toString();
-    var song = AudioSource.uri(
-        Uri.parse(
-            data['audio']),
+    var song = AudioSource.uri(Uri.parse(data['audio']),
         tag: MediaItem(
           id: '${_nextMediaId++}',
           album: data['episodenum'].toString(),
           title: data['episode'].toString(),
-          artUri: Uri.parse(
-              data['image'].toString()),
+          artUri: Uri.parse(data['image'].toString()),
         ));
     playlist.add(song);
-    Episode episodeItem = Episode(audio:data['audio'].toString(),
+    Episode episodeItem = Episode(
+      audio: data['audio'].toString(),
       episodenum: data['episodenum'].toString(),
       social: data['social'].toString(),
       episode: data['episode'].toString(),
       image: data['image'].toString(),
-      date: data['date'].toString(), series: data['name'].toString(), id: q['id'], idback: q['idback'] , description: data['description'].toString(),);
+      date: data['date'].toString(),
+      series: data['name'].toString(),
+      id: q['id'],
+      idback: q['idback'],
+      description: data['description'].toString(),
+    );
     arr.add(episodeItem);
-    print(value);});
+    print(value);
+  });
   return [arr, playlist];
 }
-var songInit = AudioSource.uri(
-Uri.parse(
-'https://urban.tatar/podcast/kazan_kayniy/kazan_kayniy_1.mp3'),
-tag: MediaItem(
-id: '${0}',
-album: '',
-title: '',
-artUri: Uri.parse(
-'https://s6.gifyu.com/images/loadut.jpg'),
-));
-Episode episodeInit = Episode(audio:'',
-  episodenum: '',
-  episode: '',
-  image: '',
-  date: '', series: '', description: '', id: '9-7-3291', idback:'9-7-3291', social: '');
-
-var initData = [[episodeInit], songInit];

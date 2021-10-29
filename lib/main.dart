@@ -10,7 +10,6 @@ void main() {
   runApp(
     SplashApp(
       key: UniqueKey(),
-
       onInitializationComplete: () => runMainApp(),
     ),
   );
@@ -23,7 +22,6 @@ void runMainApp() {
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -56,11 +54,8 @@ class _SplashAppState extends State<SplashApp> {
     initializeFlutterFire();
   }
 
-
-  // Define an async function to initialize FlutterFire
   void initializeFlutterFire() async {
     try {
-      // Wait for Firebase to initialize and set `_initialized` state to true
       await Firebase.initializeApp();
       await JustAudioBackground.init(
         androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
@@ -71,8 +66,7 @@ class _SplashAppState extends State<SplashApp> {
         _initialized = true;
         print('INITIALIZED');
       });
-    } catch(e) {
-      // Set `_error` state to true if Firebase initialization fails
+    } catch (e) {
       setState(() {
         _error = true;
       });
@@ -93,21 +87,22 @@ class _SplashAppState extends State<SplashApp> {
 
   Widget _buildBody() {
     if (_hasError) {
-      return  Scaffold(
+      return Scaffold(
           backgroundColor: white,
           body: Center(
-        // ignore: deprecated_member_use
-        child: RaisedButton(
-          child: Text('retry'),
-          onPressed: () => main(),
-        ),
-      ));
+            child: ElevatedButton(
+              child: Text('retry'),
+              onPressed: () => main(),
+            ),
+          ));
     }
-    if (_initialized){widget.onInitializationComplete();}
+    if (_initialized) {
+      widget.onInitializationComplete();
+    }
     return Scaffold(
-    backgroundColor: white,
+        backgroundColor: white,
         body: Center(
-      child: CircularProgressIndicator(color:green),
-    ));
+          child: CircularProgressIndicator(color: green),
+        ));
   }
 }
