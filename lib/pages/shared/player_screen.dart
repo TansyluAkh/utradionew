@@ -154,8 +154,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
                                 }),
                               )),
                           SizedBox(height: 20),
-                          SizedBox(
-                            height: 100,
+                          Container(
                             child: Center(
                               child: SingleChildScrollView(
                                 child: Text(metadata.title,
