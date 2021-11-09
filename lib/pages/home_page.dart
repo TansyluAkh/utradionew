@@ -13,7 +13,6 @@ import 'package:cloud_firestore/cloud_firestore.dart' hide Blob;
 import 'package:blobs/blobs.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
@@ -33,7 +32,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    initRadioPlayer('');
   }
 
   void initRadioPlayer(selectedRadio) {
@@ -108,60 +106,60 @@ class _HomePageState extends State<HomePage> {
             var radios = radiosInfo.data[0];
             var selectedRadio = radiosInfo.data[1];
             return radiosInfo.data != null ?  Scaffold(
-              backgroundColor: white,
-          appBar: AppBar(
-          backwardsCompatibility: false,
-          centerTitle: false,
-          systemOverlayStyle:
-          SystemUiOverlayStyle(statusBarColor: Colors.transparent),
-          title: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-            Text('URBANTATAR · ',
-                style: const TextStyle(
-                  fontSize: 20,
-                )).shimmer(primaryColor: red, secondaryColor: green),
-            Text(_category,
-                style: const TextStyle(
-                  fontSize: 18,
-                )).shimmer(primaryColor: red, secondaryColor: green)
-          ]),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
-          ),
-          backgroundColor: Colors.transparent,
-          // Colors.white.withOpacity(0.1),
-          elevation: 0,
-        ),
-        body: Column(children: [
-          ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: height * 0.1),
-              child: VxSwiper.builder(
-                itemCount: 1,
-                height: height * 0.1,
-                viewportFraction: 1.0,
-                autoPlay: true,
-                autoPlayAnimationDuration: 3.seconds,
-                autoPlayCurve: Curves.easeInOut,
-                enableInfiniteScroll: true,
-                itemBuilder: (context, index) {
-                  final s = _info + '\n' + _info1;
-                  return Chip(
-                    autofocus: true,
-                    label: Container(
-                      width: width,
-                      child: Text(
-                        s,
-                        style: TextStyle(
+                backgroundColor: white,
+                appBar: AppBar(
+                  backwardsCompatibility: false,
+                  centerTitle: false,
+                  systemOverlayStyle:
+                  SystemUiOverlayStyle(statusBarColor: Colors.transparent),
+                  title: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                    Text('URBANTATAR · ',
+                        style: const TextStyle(
                           fontSize: 20,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    backgroundColor: white,
-                  );
-                },
-              )), SizedBox(height:20),
+                        )).shimmer(primaryColor: red, secondaryColor: green),
+                    Text(_category,
+                        style: const TextStyle(
+                          fontSize: 18,
+                        )).shimmer(primaryColor: red, secondaryColor: green)
+                  ]),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+                  ),
+                  backgroundColor: Colors.transparent,
+                  // Colors.white.withOpacity(0.1),
+                  elevation: 0,
+                ),
+                body: Column(children: [
+                  ConstrainedBox(
+                      constraints: BoxConstraints(maxHeight: height * 0.1),
+                      child: VxSwiper.builder(
+                        itemCount: 1,
+                        height: height * 0.1,
+                        viewportFraction: 1.0,
+                        autoPlay: true,
+                        autoPlayAnimationDuration: 3.seconds,
+                        autoPlayCurve: Curves.easeInOut,
+                        enableInfiniteScroll: true,
+                        itemBuilder: (context, index) {
+                          final s = _info + '\n' + _info1;
+                          return Chip(
+                            autofocus: true,
+                            label: Container(
+                              width: width,
+                              child: Text(
+                                s,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                ),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            backgroundColor: white,
+                          );
+                        },
+                      )), SizedBox(height:20),
                   Align(alignment: Alignment.center,
                       child: radios.length > 0
                           ? VxSwiper.builder(
@@ -172,81 +170,84 @@ class _HomePageState extends State<HomePage> {
                           onPageChanged: (index) {
                             setState(() {
                               selectedRadio = radios[index];
-                            _playMusic(selectedRadio.url, radios, selectedRadio);
+                              _playMusic(selectedRadio.url, radios, selectedRadio);
                             });
                           },
                           itemBuilder: (context, index) {
                             final rad = radios[index];
                             print(rad);
                             return Column(children: [
-                            HomeBlob(
-                                url: rad.image,
-                                width: width * 0.8,
-                                height: width * 0.8,
-                                redColor: red,
-                                id: rad.blobid,
-                                idback: rad.idback,
-                                greenColor: green),
-                              ]);
+                              HomeBlob(
+                                  url: rad.image,
+                                  width: width * 0.8,
+                                  height: width * 0.8,
+                                  redColor: red,
+                                  id: rad.blobid,
+                                  idback: rad.idback,
+                                  greenColor: green),
+                            ]);
                           })
                           : Center(
-                        child: CircularProgressIndicator(color: green),
+                        child: CircularProgressIndicator(),
                       )),
-          _ad != '' ? Align(
-              alignment: Alignment.center,
-              child:  InkWell( child: Image.network(_ad, width: width/2, fit: BoxFit.contain), onTap: () => setState(() {
-                _launched = _launchInBrowser(_adlink);
-                print(_launched);
-              }),)):SizedBox(height:1)
-        ]),
-        floatingActionButton: FloatingActionButton(
-          mini: true,
-          foregroundColor: Colors.black,
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          onPressed: () {
-            print('gg');
-          },
-          child: Icon(
-            isplaying ? FontAwesomeIcons.pause : FontAwesomeIcons.play,
-            size: height * 0.05,
-          ).onInkTap(() {
-            if (isplaying) {
-              _audioPlayer.pause();
-            } else {
-              if (selectedRadio != null) {
-                _playMusic(selectedRadio.url, radios, selectedRadio);
-              }
-            }
-          }),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: AnimatedBottomNavigationBar(
-          splashColor: green,
-          splashRadius: 15,
-          iconSize: height * 0.055,
-          icons: [MyFlutterApp.podcast, MyFlutterApp.mom],
-          activeIndex: _bottomNavIndex,
-          gapLocation: GapLocation.center,
-          notchSmoothness: NotchSmoothness.verySmoothEdge,
-          leftCornerRadius: 25,
-          rightCornerRadius: 25,
-          onTap: (index) {
-            setState(() {
-              _bottomNavIndex = index;
-            });
-            navigateToPage(_bottomNavIndex);
-          },
-        )) : Center(
-          child: CircularProgressIndicator(color: green,  backgroundColor: white),
-          );
-    }
+                  _ad != '' ? Align(
+                      alignment: Alignment.center,
+                      child:  InkWell( child: Image.network(_ad, width: width/2, fit: BoxFit.contain), onTap: () => setState(() {
+                        _launched = _launchInBrowser(_adlink);
+                        print(_launched);
+                      }),)):SizedBox(height:1)
+                ]),
+                floatingActionButton: FloatingActionButton(
+                  mini: true,
+                  foregroundColor: Colors.black,
+                  backgroundColor: Colors.transparent,
+                  elevation: 0,
+                  onPressed: () {
+                    print('gg');
+                  },
+                  child: Icon(
+                    isplaying ? FontAwesomeIcons.pause : FontAwesomeIcons.play,
+                    size: height * 0.07,
+                  ).onInkTap(() {
+                    if (isplaying) {
+                      _audioPlayer.pause();
+                    } else {
+                      if (selectedRadio != null) {
+                        _playMusic(selectedRadio.url, radios, selectedRadio);
+                      }
+                    }
+                  }),
+                ),
+                floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+                bottomNavigationBar: AnimatedBottomNavigationBar(
+                  splashColor: green,
+                  splashRadius: 15,
+                  notchMargin: 35,
+                  height:  height * 0.09,
+                  iconSize: height * 0.07,
+                  icons: [MyFlutterApp.podcast, MyFlutterApp.mom],
+                  activeIndex: _bottomNavIndex,
+                  gapLocation: GapLocation.center,
+                  gapWidth: 100,
+                  notchSmoothness: NotchSmoothness.verySmoothEdge,
+                  leftCornerRadius: 2,
+                  rightCornerRadius: 2,
+                  onTap: (index) {
+                    setState(() {
+                      _bottomNavIndex = index;
+                    });
+                    navigateToPage(_bottomNavIndex);
+                  },
+                )) : Center(
+              child: CircularProgressIndicator(backgroundColor: white),
+            );
+          }
           else{
             return Scaffold(
-            backgroundColor: white,
+                backgroundColor: white,
                 body: Center(
-              child: CircularProgressIndicator(color: green),
-            ));
+                  child: CircularProgressIndicator(),
+                ));
           }});}
 
   void getInfo(selectedRadio) {

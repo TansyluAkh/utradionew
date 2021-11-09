@@ -263,7 +263,7 @@ class ControlButtons extends StatelessWidget {
                 margin: EdgeInsets.all(8.0),
                 width: height * 0.05,
                 height: height * 0.05,
-                child: CircularProgressIndicator(color: black.withOpacity(0.8)),
+                child: CircularProgressIndicator(),
               );
             } else if (playing != true) {
               return IconButton(

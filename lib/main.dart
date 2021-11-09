@@ -102,7 +102,7 @@ class _SplashAppState extends State<SplashApp> {
     return Scaffold(
         backgroundColor: white,
         body: Center(
-          child: CircularProgressIndicator(color: green),
+          child: CircularProgressIndicator(),
         ));
   }
 }

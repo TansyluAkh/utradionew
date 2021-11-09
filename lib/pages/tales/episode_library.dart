@@ -77,7 +77,7 @@ class _EpisodesState extends State<Episodes> {
                       : Center(
                           child: CircularProgressIndicator(
                           backgroundColor: Colors.white,
-                          color: green,
+                          //color: green,
                         ));
                 })));
   }
